@@ -4,9 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kontakter · Emne 2</title>
+    <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <header>
+      <div class="header-inner">
+        <span class="brand">Kontaktboka <small>Emne 2</small></span>
+        <nav>
+          <button class="nav-button" onclick="goToContactsPage()">Kontakter</button>
+          <button class="nav-button" onclick="goToGroupsPage()">Grupper</button>
+        </nav>
+      </div>
+    </header>
+    <main id="app"></main>
+    <footer>Referanseapp for Emne 2 · Data lagres kun i minnet og nullstilles ved omlasting.</footer>
+    <script src="js/model.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/contactsPageController.js"></script>
+    <script src="js/editContactPageController.js"></script>
+    <script src="js/groupsPageController.js"></script>
+    <script src="js/contactsPageView.js"></script>
+    <script src="js/editContactPageView.js"></script>
+    <script src="js/groupsPageView.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

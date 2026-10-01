@@ -16,7 +16,6 @@ button { border: 1px solid transparent; border-radius: 6px; padding: 9px 15px; b
 button:hover { filter: brightness(.92); }
 button:disabled { opacity: .45; cursor: default; }
 .secondary, .nav-button { color: #24523f; background: #edf3ed; border-color: #cfdbd1; }
-.nav-button[aria-current] { background: #24644d; color: white; }
 .danger { color: #95362f; background: #fff; border-color: #e0c4c1; }
 :focus-visible { outline: 3px solid #b27616; outline-offset: 3px; }
 label { display: block; margin-bottom: 6px; font-weight: 600; }
@@ -42,3 +41,4 @@ footer { margin-top: 36px; font-size: .85rem; border-top: 1px solid #d7dfd9; }
     .header-inner, main, footer { padding: 18px; }
     .new-group .actions { flex-direction: column; }
 }
+
