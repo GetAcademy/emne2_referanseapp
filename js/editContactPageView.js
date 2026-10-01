@@ -4,7 +4,7 @@ function updateViewEditContactPage() {
     if (draft.contactId === null) heading = 'Ny kontakt';
 
     // Input endrer bare viewState. Lagre-knappen kaller controlleren.
-    let html = /*HTML*/`
+    document.getElementById('app').innerHTML = /*HTML*/`
         <h1>${heading}</h1>
         <p class="muted">Lagre beholder endringene. Avbryt eller navigasjon forkaster utkastet.</p>
         <form onsubmit="saveContact(); return false;">
@@ -17,20 +17,23 @@ function updateViewEditContactPage() {
             <label for="email">E-post</label>
             <input id="email" type="email" value="${escapeHtml(draft.email)}"
                 oninput="model.viewState.editContactPage.email = this.value">
-            <fieldset><legend>Grupper</legend>`;
-
-    for (let group of model.groups) {
-        html += createGroupCheckboxHtml(group);
-    }
-    if (model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
-    html += /*HTML*/`
+            <fieldset><legend>Grupper</legend>
+                ${createGroupCheckboxesHtml()}
             </fieldset>
             <div class="actions">
                 <button type="submit">Lagre</button>
                 <button type="button" class="secondary" onclick="cancelEditContact()">Avbryt</button>
             </div>
         </form>`;
-    document.getElementById('app').innerHTML = html;
+}
+
+function createGroupCheckboxesHtml() {
+    if (model.groups.length === 0) return '<p>Ingen grupper ennå.</p>';
+    let html = '';
+    for (let group of model.groups) {
+        html += createGroupCheckboxHtml(group);
+    }
+    return html;
 }
 
 function createGroupCheckboxHtml(group) {

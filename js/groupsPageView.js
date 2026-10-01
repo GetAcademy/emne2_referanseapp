@@ -1,5 +1,5 @@
 function updateViewGroupsPage() {
-    let html = /*HTML*/`
+    document.getElementById('app').innerHTML = /*HTML*/`
         <h1>Grupper</h1>
         <form class="new-group" onsubmit="createGroup(); return false;">
             <label for="new-group">Navn på ny gruppe</label>
@@ -10,29 +10,37 @@ function updateViewGroupsPage() {
                 <button type="submit">Opprett gruppe</button>
             </div>
         </form>
-        <div class="cards">`;
+        <div class="cards">
+            ${createGroupsHtml()}
+        </div>`;
+}
 
+function createGroupsHtml() {
+    if (model.groups.length === 0) return '<p>Ingen grupper ennå.</p>';
+    let html = '';
     for (let group of model.groups) {
         html += createGroupHtml(group);
     }
-    if (model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
-    html += '</div>';
-    document.getElementById('app').innerHTML = html;
+    return html;
 }
 
 function createGroupHtml(group) {
     // Medlemmene finnes via memberships; gruppen lagrer ingen egen kontaktliste.
     const contacts = getContactsForGroup(group.id);
-    let html = /*HTML*/`<section class="card"><h2>${escapeHtml(group.name)}</h2>`;
+    return /*HTML*/`
+        <section class="card">
+            <h2>${escapeHtml(group.name)}</h2>
+            ${createGroupMembersHtml(contacts)}
+        </section>`;
+}
+
+function createGroupMembersHtml(contacts) {
     if (contacts.length === 0) {
-        html += '<p class="muted">Ingen medlemmer</p>';
-    } else {
-        html += '<ul>';
-        for (let contact of contacts) {
-            html += /*HTML*/`<li>${escapeHtml(contact.name)}</li>`;
-        }
-        html += '</ul>';
+        return '<p class="muted">Ingen medlemmer</p>';
     }
-    html += '</section>';
-    return html;
+    let html = '';
+    for (let contact of contacts) {
+        html += /*HTML*/`<li>${escapeHtml(contact.name)}</li>`;
+    }
+    return /*HTML*/`<ul>${html}</ul>`;
 }

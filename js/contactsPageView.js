@@ -11,11 +11,11 @@ function updateViewContactsPage() {
             oninput="model.viewState.contactsPage.searchText = this.value; updateView()">
         <p class="muted">${contacts.length} av ${model.contacts.length} kontakter</p>
         <div class="cards">
-          ${createContactsHtml()}
+          ${createContactsHtml(contacts)}
         </div>`;
 }
 
-function createContactsHtml() {
+function createContactsHtml(contacts) {
     if (contacts.length === 0) {
         return '<p>Ingen kontakter å vise. Prøv et annet søk eller opprett en kontakt.</p>';
     }

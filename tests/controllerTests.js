@@ -106,9 +106,16 @@ QUnit.test('Slett bruker ID og fjerner kontaktens medlemskap', function (assert)
     assert.strictEqual(model.contacts[0].id, 3);
     assert.strictEqual(model.contacts[1].id, 2);
     assert.deepEqual(model.memberships, [{ contactId: 2, groupId: 2 }]);
-    assert.strictEqual(oldContacts.length, 3);
-    assert.strictEqual(oldMemberships.length, 3);
+    assert.strictEqual(model.contacts, oldContacts, 'Sletting bruker samme array');
+    assert.strictEqual(model.memberships, oldMemberships, 'Også medlemskap slettes med splice');
     assert.strictEqual(updateViewCalls, 1);
+});
+
+QUnit.test('Sletting av ukjent ID fjerner ikke siste kontakt', function (assert) {
+    deleteContact(99);
+    assert.strictEqual(model.contacts.length, 3);
+    assert.strictEqual(model.contacts[2].id, 3);
+    assert.strictEqual(model.memberships.length, 3);
 });
 
 QUnit.test('Opprett gruppe med ny ID og nullstill input', function (assert) {

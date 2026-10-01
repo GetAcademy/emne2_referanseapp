@@ -6,21 +6,18 @@ function goToContactsPage() {
 
 // Controlleren kjenner bare modellen og updateView, ikke DOM eller HTML.
 function deleteContact(contactId) {
-    const newContacts = [];
     // ID identifiserer kontakten også etter søk. Indeks er bare plassering.
-    for (let contact of model.contacts) {
-        if (contact.id !== contactId) {
-            newContacts.push(contact);
-        }
+    const contact = findObjectById(model.contacts, contactId);
+    if (contact !== null) {
+        const index = model.contacts.indexOf(contact);
+        model.contacts.splice(index, 1);
     }
-    model.contacts = newContacts;
 
-    const newMemberships = [];
-    for (let membership of model.memberships) {
-        if (membership.contactId !== contactId) {
-            newMemberships.push(membership);
+    // splice endrer arrayen. Gå baklengs så forskjøvede elementer ikke hoppes over.
+    for (let i = model.memberships.length - 1; i >= 0; i--) {
+        if (model.memberships[i].contactId === contactId) {
+            model.memberships.splice(i, 1);
         }
     }
-    model.memberships = newMemberships;
     updateView();
 }

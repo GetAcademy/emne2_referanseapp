@@ -34,6 +34,9 @@ En vanlig script-tag nederst i `index.html` inneholder `updateView()` og oppstar
 Den velger mellom `updateViewContactsPage`, `updateViewEditContactPage` og
 `updateViewGroupsPage`. Hvert sideview leser modellen, bygger HTML og skriver
 til `#app`. Små funksjoner som `createContactHtml` lager gjentakende HTML.
+Listefunksjoner som `createContactsHtml`, `createGroupsHtml` og
+`createGroupCheckboxesHtml` samler løkkene og håndterer tomme lister, slik at
+sideviewene kan vise hele sidestrukturen i én HTML-template.
 
 Controller-funksjonene endrer modellen og ber om ny tegning. De leser ingen
 inputfelt fra DOM og bygger ingen HTML. Enkle input-hendelser skriver direkte
@@ -54,10 +57,12 @@ Vi bruker bevisst vanlige løkker, eksplisitte objekter og eksplisitte nye array
 løsningene skrives kortere med `find`, `filter`, `map` og spread-syntaks.
 Her prioriterer vi konstruksjonene studentene allerede kjenner.
 
+Ved sletting bruker vi `splice` på de eksisterende arrayene. Kontakten finnes
+via ID før plasseringen hentes med `indexOf`. Medlemskap gjennomgås baklengs,
+slik at sletting ikke forskyver elementer vi ennå ikke har undersøkt.
+
 `js/common.js` inneholder små hjelpefunksjoner. `escapeHtml` går gjennom tekst
 tegn for tegn, slik at for eksempel et navn med `<` eller `"` vises som tekst.
-Kontaktsidens view bevarer søkemarkøren når feltet tegnes på nytt; denne lille
-DOM-detaljen ligger i viewet og ikke i controlleren eller modellen.
 
 ## Leserekkefølge
 
@@ -85,8 +90,8 @@ eller app-HTML. En enkel `updateView()`-stub teller tegningskall. Før hver test
 nullstilles modellen eksplisitt, så testene ikke påvirker hverandre.
 
 Testene dekker oppretting, redigering, avbryt, sletting, medlemskap, nye grupper,
-navigasjon, ID-er, søk, kopiering og HTML-tegn. De sjekker også at gamle arrays
-og kontaktobjekter beholder innholdet sitt.
+navigasjon, ID-er, søk, kopiering og HTML-tegn. De sjekker også at lagring
+bevarer gamle arrays og kontaktobjekter, mens sletting endrer arrayene med `splice`.
 
 ## Prøv selv
 
