@@ -1,17 +1,17 @@
 function goToGroupsPage() {
     clearEditContactViewState();
-    Model.app.currentPage = 'groupsPage';
+    model.app.currentPage = 'groupsPage';
     updateView();
 }
 
 function createGroup() {
-    const name = Model.ViewState.groupsPage.newGroupName.trim();
+    const name = model.viewState.groupsPage.newGroupName.trim();
     if (name === '') return;
 
-    const newGroup = { id: getNextId(Model.groups), name: name };
-    const newGroups = copyArray(Model.groups);
+    const newGroup = { id: getNextId(model.groups), name: name };
+    const newGroups = copyArray(model.groups);
     newGroups.push(newGroup);
-    Model.groups = newGroups;
-    Model.ViewState.groupsPage.newGroupName = '';
+    model.groups = newGroups;
+    model.viewState.groupsPage.newGroupName = '';
     updateView();
 }

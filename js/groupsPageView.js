@@ -5,17 +5,17 @@ function updateViewGroupsPage() {
             <label for="new-group">Navn på ny gruppe</label>
             <div class="actions">
                 <input id="new-group" required
-                    value="${escapeHtml(Model.ViewState.groupsPage.newGroupName)}"
-                    oninput="Model.ViewState.groupsPage.newGroupName = this.value">
+                    value="${escapeHtml(model.viewState.groupsPage.newGroupName)}"
+                    oninput="model.viewState.groupsPage.newGroupName = this.value">
                 <button type="submit">Opprett gruppe</button>
             </div>
         </form>
         <div class="cards">`;
 
-    for (let group of Model.groups) {
+    for (let group of model.groups) {
         html += createGroupHtml(group);
     }
-    if (Model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
+    if (model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
     html += '</div>';
     document.getElementById('app').innerHTML = html;
 }

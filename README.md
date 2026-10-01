@@ -11,33 +11,33 @@ i flere grupper. Skjermbildene bestemmer hva modellen må huske:
 
 | Skjermbilde | Hva holder brukeren på med? | State |
 | --- | --- | --- |
-| Kontakter: søk, liste, Ny, Rediger, Slett | Søker etter en kontakt | `Model.ViewState.contactsPage.searchText` |
-| Kontaktutkast: felter, gruppevalg, Lagre, Avbryt | Redigerer et arbeidsutkast | `Model.ViewState.editContactPage` |
-| Grupper: medlemmer og felt for ny gruppe | Skriver et gruppenavn | `Model.ViewState.groupsPage.newGroupName` |
+| Kontakter: søk, liste, Ny, Rediger, Slett | Søker etter en kontakt | `model.viewState.contactsPage.searchText` |
+| Kontaktutkast: felter, gruppevalg, Lagre, Avbryt | Redigerer et arbeidsutkast | `model.viewState.editContactPage` |
+| Grupper: medlemmer og felt for ny gruppe | Skriver et gruppenavn | `model.viewState.groupsPage.newGroupName` |
 
-`Model.app.currentPage` husker hvilken side som vises. Domenedataene ligger
-direkte i `Model.contacts`, `Model.groups` og `Model.memberships`.
+`model.app.currentPage` husker hvilken side som vises. Domenedataene ligger
+direkte i `model.contacts`, `model.groups` og `model.memberships`.
 Hver type har sin egen liste. Medlemskap kobler kontakter og grupper via ID-er;
 vi legger ikke komplette grupper inn i kontaktobjektene.
 
 ## Kode og dataflyt
 
 Vanlige script-tags i `index.html` laster globale JavaScript-filer i oppgitt
-rekkefølge. Det finnes én global `const Model`. Innholdet i modellen kan endres,
+rekkefølge. Det finnes én global `const model`. Innholdet i modellen kan endres,
 men selve variabelen skal ikke erstattes.
 
 ```text
 BRUKERHANDLING → CONTROLLER → MODELLENDRING → updateView() → NY HTML
 ```
 
-`js/main.js` inneholder den sentrale `updateView()` og oppstartskallet.
+En vanlig script-tag nederst i `index.html` inneholder `updateView()` og oppstartskallet.
 Den velger mellom `updateViewContactsPage`, `updateViewEditContactPage` og
 `updateViewGroupsPage`. Hvert sideview leser modellen, bygger HTML og skriver
 til `#app`. Små funksjoner som `createContactHtml` lager gjentakende HTML.
 
 Controller-funksjonene endrer modellen og ber om ny tegning. De leser ingen
 inputfelt fra DOM og bygger ingen HTML. Enkle input-hendelser skriver direkte
-til `Model.ViewState`; domenedata endres bare gjennom controllerne.
+til `model.viewState`; domenedata endres bare gjennom controllerne.
 
 Rediger kopierer feltene til et arbeidsutkast. Lagre oppretter et nytt
 kontaktobjekt og nye arrays. Avbryt eller navigasjon til en annen side forkaster
@@ -61,8 +61,8 @@ DOM-detaljen ligger i viewet og ikke i controlleren eller modellen.
 
 ## Leserekkefølge
 
-1. `js/model.js`: app-state, ViewState og entitetslistene.
-2. `index.html` og `js/main.js`: script-rekkefølge og sidevalg.
+1. `js/model.js`: app-state, viewState og entitetslistene.
+2. `index.html`: script-rekkefølge, sidevalg og oppstart.
 3. `js/contactsPageView.js` og `js/common.js`: HTML, søk og relasjoner.
 4. `js/editContactPageController.js`: start redigering, lagre og avbryt.
 5. `js/editContactPageView.js`: input skriver bare til utkastet.
@@ -72,7 +72,7 @@ DOM-detaljen ligger i viewet og ikke i controlleren eller modellen.
 
 Les også [Emne 2-måten å bygge en applikasjon](om%20emne%202-måten%20å%20bygge%20app%20på.md).
 Dokumentet forklarer både arkitekturen og JavaScript-nivået. Appen følger dette
-med stor `M` i `Model`, stor `V` i `ViewState`, domenelister direkte på modellen
+med liten forbokstav i `model` og alle feltene, domenelister direkte på modellen
 og vanlige løkker.
 
 ## Tester i nettleseren

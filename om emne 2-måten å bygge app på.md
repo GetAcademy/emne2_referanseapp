@@ -68,7 +68,7 @@ Et viktig prinsipp er:
 Vi bruker én global variabel som heter:
 
 ```js
-const Model = {
+const model = {
 };
 ```
 
@@ -81,12 +81,12 @@ model.js
 En typisk modell ser slik ut:
 
 ```js
-const Model = {
+const model = {
     app: {
         currentPage: 'contactsPage',
     },
 
-    ViewState: {
+    viewState: {
         contactsPage: {
             searchText: '',
         },
@@ -107,17 +107,17 @@ const Model = {
 
 Vi bruker altså tre hovedtyper informasjon:
 
-- `Model.app`
-- `Model.ViewState`
-- domenedata direkte på `Model`
+- `model.app`
+- `model.viewState`
+- domenedata direkte på `model`
 
 Vi bruker ikke nødvendigvis et ekstra `data`-objekt rundt domenedataene.
 
 ---
 
-# 4. `Model.app`
+# 4. `model.app`
 
-`Model.app` inneholder state som gjelder hele applikasjonen.
+`model.app` inneholder state som gjelder hele applikasjonen.
 
 Eksempel:
 
@@ -142,18 +142,18 @@ Dette er feil:
 app: document.getElementById('app')
 ```
 
-`Model` skal inneholde state og data, ikke referanser til HTML-elementer.
+`model` skal inneholde state og data, ikke referanser til HTML-elementer.
 
 ---
 
-# 5. `Model.ViewState`
+# 5. `model.viewState`
 
-`ViewState` beskriver hva brukeren holder på med akkurat nå.
+`viewState` beskriver hva brukeren holder på med akkurat nå.
 
 Eksempel:
 
 ```js
-ViewState: {
+viewState: {
     editContactPage: {
         contactId: 1,
         name: 'Terje',
@@ -167,7 +167,7 @@ Dette er ikke nødvendigvis de lagrede dataene.
 
 Det er et arbeidsutkast.
 
-Hvis kontakten i `Model.contacts` heter:
+Hvis kontakten i `model.contacts` heter:
 
 ```js
 {
@@ -187,7 +187,7 @@ skal ikke kontaktobjektet endres ennå.
 I stedet skal:
 
 ```js
-Model.ViewState.editContactPage.name
+model.viewState.editContactPage.name
 ```
 
 inneholde:
@@ -204,7 +204,7 @@ Dette gjør blant annet Avbryt enkelt å implementere.
 
 # 6. Domenedata
 
-De faktiske tingene applikasjonen handler om ligger direkte på `Model`.
+De faktiske tingene applikasjonen handler om ligger direkte på `model`.
 
 Eksempel:
 
@@ -359,13 +359,13 @@ contacts: [
 og:
 
 ```js
-Model.ViewState.contactsPage.searchText
+model.viewState.contactsPage.searchText
 ```
 
 trenger vi ikke også lagre:
 
 ```js
-Model.filteredContacts
+model.filteredContacts
 ```
 
 Den filtrerte listen kan beregnes når viewet tegnes.
@@ -444,7 +444,7 @@ function updateView() {
 Denne ser på:
 
 ```js
-Model.app.currentPage
+model.app.currentPage
 ```
 
 og kaller riktig under-view.
@@ -453,13 +453,13 @@ Eksempel:
 
 ```js
 function updateView() {
-    if (Model.app.currentPage === 'contactsPage') {
+    if (model.app.currentPage === 'contactsPage') {
         updateViewContactsPage();
     }
-    else if (Model.app.currentPage === 'editContactPage') {
+    else if (model.app.currentPage === 'editContactPage') {
         updateViewEditContactPage();
     }
-    else if (Model.app.currentPage === 'groupsPage') {
+    else if (model.app.currentPage === 'groupsPage') {
         updateViewGroupsPage();
     }
 }
@@ -557,8 +557,8 @@ createGroup()
 
 En controller-funksjon skal typisk:
 
-1. lese fra `Model`
-2. endre `Model`
+1. lese fra `model`
+2. endre `model`
 3. kalle `updateView()`
 
 Controlleren skal ikke bygge HTML.
@@ -591,16 +591,16 @@ Controlleren endrer modellen.
 
 ---
 
-# 18. Input kan skrive direkte til ViewState
+# 18. Input kan skrive direkte til viewState
 
-Enkle inputfelt kan oppdatere `ViewState` direkte.
+Enkle inputfelt kan oppdatere `viewState` direkte.
 
 Eksempel:
 
 ```html
 <input
-    value="${Model.ViewState.editContactPage.name}"
-    oninput="Model.ViewState.editContactPage.name = this.value"
+    value="${model.viewState.editContactPage.name}"
+    oninput="model.viewState.editContactPage.name = this.value"
 />
 ```
 
@@ -610,42 +610,42 @@ Vi skal derimot ikke endre domenedata direkte fra HTML-eventet.
 
 ---
 
-# 19. ViewState som arbeidsutkast
+# 19. viewState som arbeidsutkast
 
 Når en kontakt skal redigeres:
 
 ```js
 function startEditContact(contactId) {
-    const contact = findObjectById(Model.contacts, contactId);
+    const contact = findObjectById(model.contacts, contactId);
 
-    Model.ViewState.editContactPage.contactId = contact.id;
-    Model.ViewState.editContactPage.name = contact.name;
-    Model.ViewState.editContactPage.phone = contact.phone;
-    Model.ViewState.editContactPage.email = contact.email;
+    model.viewState.editContactPage.contactId = contact.id;
+    model.viewState.editContactPage.name = contact.name;
+    model.viewState.editContactPage.phone = contact.phone;
+    model.viewState.editContactPage.email = contact.email;
 
-    Model.app.currentPage = 'editContactPage';
+    model.app.currentPage = 'editContactPage';
 
     updateView();
 }
 ```
 
-Brukeren redigerer nå `ViewState`.
+Brukeren redigerer nå `viewState`.
 
 Den lagrede kontakten endres først ved Lagre.
 
 ---
 
-# 20. Nullstill ViewState tydelig
+# 20. Nullstill viewState tydelig
 
 Lag gjerne egne funksjoner:
 
 ```js
 function clearEditContactViewState() {
-    Model.ViewState.editContactPage.contactId = null;
-    Model.ViewState.editContactPage.name = '';
-    Model.ViewState.editContactPage.phone = '';
-    Model.ViewState.editContactPage.email = '';
-    Model.ViewState.editContactPage.selectedGroupIds = [];
+    model.viewState.editContactPage.contactId = null;
+    model.viewState.editContactPage.name = '';
+    model.viewState.editContactPage.phone = '';
+    model.viewState.editContactPage.email = '';
+    model.viewState.editContactPage.selectedGroupIds = [];
 }
 ```
 
@@ -662,9 +662,9 @@ Når en kontakt lagres, lag et nytt objekt:
 ```js
 const updatedContact = {
     id: contactId,
-    name: Model.ViewState.editContactPage.name,
-    phone: Model.ViewState.editContactPage.phone,
-    email: Model.ViewState.editContactPage.email,
+    name: model.viewState.editContactPage.name,
+    phone: model.viewState.editContactPage.phone,
+    email: model.viewState.editContactPage.email,
 };
 ```
 
@@ -690,7 +690,7 @@ Eksempel:
 ```js
 const newContacts = [];
 
-for (let contact of Model.contacts) {
+for (let contact of model.contacts) {
     if (contact.id === contactId) {
         newContacts.push(updatedContact);
     } else {
@@ -698,7 +698,7 @@ for (let contact of Model.contacts) {
     }
 }
 
-Model.contacts = newContacts;
+model.contacts = newContacts;
 ```
 
 Dette er bevisst eksplisitt kode.
@@ -936,10 +936,10 @@ Eksempel:
 function getGroupsForContact(contactId) {
     const groups = [];
 
-    for (let membership of Model.memberships) {
+    for (let membership of model.memberships) {
         if (membership.contactId === contactId) {
             const group = findObjectById(
-                Model.groups,
+                model.groups,
                 membership.groupId
             );
 
@@ -1024,7 +1024,6 @@ editContactPageController.js
 groupsPageView.js
 groupsPageController.js
 
-main.js
 ```
 
 Filer lastes inn med vanlige:
@@ -1037,26 +1036,30 @@ i riktig rekkefølge.
 
 ---
 
-# 29. `main.js`
+# 29. Sidevalg og oppstart i `index.html`
 
-`main.js` skal gjerne være svært enkel.
+Legg `updateView()` og oppstartskallet i en vanlig script-tag nederst i
+`index.html`, etter script-tagene som laster de andre JavaScript-filene.
+Da er oppstarten og sidevalget samlet på ett sted.
 
 Eksempel:
 
-```js
+```html
+<script>
 function updateView() {
-    if (Model.app.currentPage === 'contactsPage') {
+    if (model.app.currentPage === 'contactsPage') {
         updateViewContactsPage();
     }
-    else if (Model.app.currentPage === 'editContactPage') {
+    else if (model.app.currentPage === 'editContactPage') {
         updateViewEditContactPage();
     }
-    else if (Model.app.currentPage === 'groupsPage') {
+    else if (model.app.currentPage === 'groupsPage') {
         updateViewGroupsPage();
     }
 }
 
 updateView();
+</script>
 ```
 
 Dette er nok routing for denne typen SPA.
@@ -1139,8 +1142,8 @@ Når dette dokumentet gis til KI sammen med studentens kode, skal KI evaluere l�
 KI skal blant annet se etter:
 
 - ligger app-state riktig?
-- ligger midlertidig input-state i `ViewState`?
-- ligger domenedata direkte i `Model`?
+- ligger midlertidig input-state i `viewState`?
+- ligger domenedata direkte i `model`?
 - brukes ID-er mellom entiteter?
 - finnes unødvendige dype strukturer?
 - er data kopiert flere steder?
@@ -1232,15 +1235,15 @@ NEW HTML
 Og modellen kan igjen forstås slik:
 
 ```text
-Model.app
+model.app
     =
 state for hele applikasjonen
 
-Model.ViewState
+model.viewState
     =
 det brukeren holder på med akkurat nå
 
-Model.contacts / groups / products / orders / ...
+model.contacts / groups / products / orders / ...
     =
 de faktiske domenedataene
 ```
@@ -1253,9 +1256,9 @@ Hvis denne strukturen er tydelig, har applikasjonen som regel et godt utgangspun
 
 Før du anser løsningen som ferdig, spør:
 
-- Har jeg én global `Model`?
-- Har jeg `Model.app` for state som gjelder hele appen?
-- Har jeg `Model.ViewState` for midlertidig state per side?
+- Har jeg én global `model`?
+- Har jeg `model.app` for state som gjelder hele appen?
+- Har jeg `model.viewState` for midlertidig state per side?
 - Ligger domenedataene i egne arrays?
 - Har objektene ID-er?
 - Bruker jeg ID-er til å koble objekter?

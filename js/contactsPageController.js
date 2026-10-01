@@ -1,6 +1,6 @@
 function goToContactsPage() {
     clearEditContactViewState();
-    Model.app.currentPage = 'contactsPage';
+    model.app.currentPage = 'contactsPage';
     updateView();
 }
 
@@ -8,19 +8,19 @@ function goToContactsPage() {
 function deleteContact(contactId) {
     const newContacts = [];
     // ID identifiserer kontakten også etter søk. Indeks er bare plassering.
-    for (let contact of Model.contacts) {
+    for (let contact of model.contacts) {
         if (contact.id !== contactId) {
             newContacts.push(contact);
         }
     }
-    Model.contacts = newContacts;
+    model.contacts = newContacts;
 
     const newMemberships = [];
-    for (let membership of Model.memberships) {
+    for (let membership of model.memberships) {
         if (membership.contactId !== contactId) {
             newMemberships.push(membership);
         }
     }
-    Model.memberships = newMemberships;
+    model.memberships = newMemberships;
     updateView();
 }

@@ -1,11 +1,11 @@
-const Model = {
+const model = {
     // State som gjelder hele appen.
     app: {
         currentPage: 'contactsPage',
     },
 
     // Midlertidig state: hva brukeren holder på med på hver side.
-    ViewState: {
+    viewState: {
         contactsPage: {
             searchText: '',
         },
@@ -21,7 +21,7 @@ const Model = {
         },
     },
 
-    // Domenedata: én liste per entitetstype, direkte på Model.
+    // Domenedata: én liste per entitetstype, direkte på model.
     contacts: [
         { id: 1, name: 'Terje', phone: '12345678', email: 'terje@example.com' },
         { id: 2, name: 'Per', phone: '87654321', email: 'per@example.com' },

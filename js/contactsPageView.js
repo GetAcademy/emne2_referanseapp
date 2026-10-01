@@ -15,9 +15,9 @@ function updateViewContactsPage() {
         </div>
         <label for="search">Søk etter navn, telefon eller e-post</label>
         <input id="search" type="search"
-            value="${escapeHtml(Model.ViewState.contactsPage.searchText)}"
-            oninput="Model.ViewState.contactsPage.searchText = this.value; updateView()">
-        <p class="muted">${contacts.length} av ${Model.contacts.length} kontakter</p>
+            value="${escapeHtml(model.viewState.contactsPage.searchText)}"
+            oninput="model.viewState.contactsPage.searchText = this.value; updateView()">
+        <p class="muted">${contacts.length} av ${model.contacts.length} kontakter</p>
         <div class="cards">`;
 
     for (let contact of contacts) {

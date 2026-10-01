@@ -26,6 +26,21 @@
     <script src="js/contactsPageView.js"></script>
     <script src="js/editContactPageView.js"></script>
     <script src="js/groupsPageView.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+      // BRUKERHANDLING → CONTROLLER → MODELLENDRING → updateView() → NY HTML
+      function updateView() {
+        if (model.app.currentPage === 'contactsPage') {
+          updateViewContactsPage();
+        }
+        else if (model.app.currentPage === 'editContactPage') {
+          updateViewEditContactPage();
+        }
+        else if (model.app.currentPage === 'groupsPage') {
+          updateViewGroupsPage();
+        }
+      }
+
+      updateView();
+    </script>
   </body>
 </html>

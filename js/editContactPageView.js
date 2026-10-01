@@ -1,28 +1,28 @@
 function updateViewEditContactPage() {
-    const draft = Model.ViewState.editContactPage;
+    const draft = model.viewState.editContactPage;
     let heading = 'Rediger kontakt';
     if (draft.contactId === null) heading = 'Ny kontakt';
 
-    // Input endrer bare ViewState. Lagre-knappen kaller controlleren.
+    // Input endrer bare viewState. Lagre-knappen kaller controlleren.
     let html = /*HTML*/`
         <h1>${heading}</h1>
         <p class="muted">Lagre beholder endringene. Avbryt eller navigasjon forkaster utkastet.</p>
         <form onsubmit="saveContact(); return false;">
             <label for="name">Navn (obligatorisk)</label>
             <input id="name" required value="${escapeHtml(draft.name)}"
-                oninput="Model.ViewState.editContactPage.name = this.value">
+                oninput="model.viewState.editContactPage.name = this.value">
             <label for="phone">Telefon</label>
             <input id="phone" type="tel" value="${escapeHtml(draft.phone)}"
-                oninput="Model.ViewState.editContactPage.phone = this.value">
+                oninput="model.viewState.editContactPage.phone = this.value">
             <label for="email">E-post</label>
             <input id="email" type="email" value="${escapeHtml(draft.email)}"
-                oninput="Model.ViewState.editContactPage.email = this.value">
+                oninput="model.viewState.editContactPage.email = this.value">
             <fieldset><legend>Grupper</legend>`;
 
-    for (let group of Model.groups) {
+    for (let group of model.groups) {
         html += createGroupCheckboxHtml(group);
     }
-    if (Model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
+    if (model.groups.length === 0) html += '<p>Ingen grupper ennå.</p>';
     html += /*HTML*/`
             </fieldset>
             <div class="actions">
@@ -35,7 +35,7 @@ function updateViewEditContactPage() {
 
 function createGroupCheckboxHtml(group) {
     let checked = '';
-    if (Model.ViewState.editContactPage.selectedGroupIds.includes(group.id)) {
+    if (model.viewState.editContactPage.selectedGroupIds.includes(group.id)) {
         checked = 'checked';
     }
     return /*HTML*/`

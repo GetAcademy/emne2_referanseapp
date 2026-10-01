@@ -28,9 +28,9 @@ function copyArray(array) {
 // PRINSIPP: Relasjonsoppslag beregnes, ikke lagres i modellen.
 function getGroupsForContact(contactId) {
     const result = [];
-    for (let membership of Model.memberships) {
+    for (let membership of model.memberships) {
         if (membership.contactId === contactId) {
-            const group = findObjectById(Model.groups, membership.groupId);
+            const group = findObjectById(model.groups, membership.groupId);
             if (group != null) {
                 result.push(group);
             }
@@ -41,9 +41,9 @@ function getGroupsForContact(contactId) {
 
 function getContactsForGroup(groupId) {
     const result = [];
-    for (let membership of Model.memberships) {
+    for (let membership of model.memberships) {
         if (membership.groupId === groupId) {
-            const contact = findObjectById(Model.contacts, membership.contactId);
+            const contact = findObjectById(model.contacts, membership.contactId);
             if (contact != null) {
                 result.push(contact);
             }
@@ -54,9 +54,9 @@ function getContactsForGroup(groupId) {
 
 function getFilteredContacts() {
     const result = [];
-    const searchText = Model.ViewState.contactsPage.searchText.trim().toLowerCase();
+    const searchText = model.viewState.contactsPage.searchText.trim().toLowerCase();
     // PRINSIPP: Bare søketeksten må huskes. Trefflisten beregnes ved visning.
-    for (let contact of Model.contacts) {
+    for (let contact of model.contacts) {
         if (contact.name.toLowerCase().includes(searchText)
             || contact.phone.includes(searchText)
             || contact.email.toLowerCase().includes(searchText)) {
