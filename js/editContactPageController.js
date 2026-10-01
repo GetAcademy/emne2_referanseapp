@@ -1,10 +1,10 @@
 function clearEditContactViewState() {
-    const ViewState = model.viewState.editContactPage;
-    ViewState.contactId = null;
-    ViewState.name = '';
-    ViewState.phone = '';
-    ViewState.email = '';
-    ViewState.selectedGroupIds = [];
+    const viewState = model.viewState.editContactPage;
+    viewState.contactId = null;
+    viewState.name = '';
+    viewState.phone = '';
+    viewState.email = '';
+    viewState.selectedGroupIds = [];
 }
 
 function startNewContact() {
@@ -17,17 +17,17 @@ function startEditContact(contactId) {
     const contact = findObjectById(model.contacts, contactId);
     if (contact === null) return;
 
-    const ViewState = model.viewState.editContactPage;
+    const viewState = model.viewState.editContactPage;
     // PRINSIPP: viewState er arbeidsutkastet. model.contacts er lagrede data.
     // Vi kopierer feltene; domenedata endres først når brukeren trykker Lagre.
-    ViewState.contactId = contact.id;
-    ViewState.name = contact.name;
-    ViewState.phone = contact.phone;
-    ViewState.email = contact.email;
-    ViewState.selectedGroupIds = [];
+    viewState.contactId = contact.id;
+    viewState.name = contact.name;
+    viewState.phone = contact.phone;
+    viewState.email = contact.email;
+    viewState.selectedGroupIds = [];
     for (let membership of model.memberships) {
         if (membership.contactId === contactId) {
-            ViewState.selectedGroupIds.push(membership.groupId);
+            viewState.selectedGroupIds.push(membership.groupId);
         }
     }
     model.app.currentPage = 'editContactPage';
@@ -35,8 +35,8 @@ function startEditContact(contactId) {
 }
 
 function toggleGroupForEditedContact(groupId) {
-    const ViewState = model.viewState.editContactPage;
-    const selectedIds = ViewState.selectedGroupIds;
+    const viewState = model.viewState.editContactPage;
+    const selectedIds = viewState.selectedGroupIds;
     const newSelectedIds = [];
     for (let id of selectedIds) {
         if (id !== groupId) {
@@ -46,23 +46,23 @@ function toggleGroupForEditedContact(groupId) {
     if (!selectedIds.includes(groupId)) {
         newSelectedIds.push(groupId);
     }
-    ViewState.selectedGroupIds = newSelectedIds;
+    viewState.selectedGroupIds = newSelectedIds;
     // Avkrysningen vises allerede av nettleseren. Vi oppdaterer bare utkastet.
 }
 
 function saveContact() {
-    const ViewState = model.viewState.editContactPage;
-    if (ViewState.name.trim() === '') return;
+    const viewState = model.viewState.editContactPage;
+    if (viewState.name.trim() === '') return;
 
-    let contactId = ViewState.contactId;
+    let contactId = viewState.contactId;
     if (contactId === null) {
         contactId = getNextId(model.contacts);
     }
     const updatedContact = {
         id: contactId,
-        name: ViewState.name.trim(),
-        phone: ViewState.phone.trim(),
-        email: ViewState.email.trim(),
+        name: viewState.name.trim(),
+        phone: viewState.phone.trim(),
+        email: viewState.email.trim(),
     };
 
     // PRINSIPP: Vi bygger en ny array og et nytt kontaktobjekt.
@@ -76,7 +76,7 @@ function saveContact() {
             newContacts.push(contact);
         }
     }
-    if (ViewState.contactId === null) {
+    if (viewState.contactId === null) {
         newContacts.push(updatedContact);
     }
     model.contacts = newContacts;
@@ -88,7 +88,7 @@ function saveContact() {
             newMemberships.push(membership);
         }
     }
-    for (let groupId of ViewState.selectedGroupIds) {
+    for (let groupId of viewState.selectedGroupIds) {
         newMemberships.push({ contactId: contactId, groupId: groupId });
     }
     model.memberships = newMemberships;

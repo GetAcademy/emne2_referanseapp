@@ -203,26 +203,27 @@ Dette gjør blant annet Avbryt enkelt å implementere.
 ## Lokal referanse til sidens state
 
 Når samme `model.viewState.sidenavn` brukes mer enn én gang i en funksjon,
-trekker vi den ut i en lokal variabel med det faste navnet `ViewState`:
+trekker vi den ut i en lokal variabel med det faste navnet `viewState`:
 
 ```js
 function clearEditContactViewState() {
-    const ViewState = model.viewState.editContactPage;
-    ViewState.contactId = null;
-    ViewState.name = '';
-    ViewState.phone = '';
-    ViewState.email = '';
-    ViewState.selectedGroupIds = [];
+    const viewState = model.viewState.editContactPage;
+    viewState.contactId = null;
+    viewState.name = '';
+    viewState.phone = '';
+    viewState.email = '';
+    viewState.selectedGroupIds = [];
 }
 ```
 
-`ViewState` viser til samme objekt; det er ingen kopi eller ekstra state.
+`viewState` viser til samme objekt; det er ingen kopi eller ekstra state.
 Navnet er lokalt for funksjonen og viser til siden funksjonen tilhører.
-Vi bruker dette navnet konsekvent fremfor lokale navn som `draft` eller `viewState`.
+Vi bruker dette navnet konsekvent fremfor lokale navn som `draft`.
+Lokale variabler skrives med liten forbokstav, for eksempel `const viewState`.
 Selve modellfeltet heter fortsatt `viewState` med liten v, og den globale
 variabelen heter fortsatt `model`. Ved bare ett oppslag trengs ikke et alias.
 
-I et view kan `${ViewState.name}` brukes mens HTML-strengen bygges.
+I et view kan `${viewState.name}` brukes mens HTML-strengen bygges.
 En inline-hendelse som `oninput` kjøres senere og har ikke tilgang til den lokale
 variabelen. Der bruker vi fortsatt `model.viewState.editContactPage.name`.
 
@@ -692,12 +693,12 @@ handlingen, slik som ved filtrering:
 
 ```js
 function updateViewContactsPage() {
-    const ViewState = model.viewState.contactsPage;
+    const viewState = model.viewState.contactsPage;
     const contacts = getFilteredContacts();
     document.getElementById('app').innerHTML = /*HTML*/`
         <label for="search">Søk</label>
         <div class="search-row">
-            <input id="search" value="${escapeHtml(ViewState.searchText)}"
+            <input id="search" value="${escapeHtml(viewState.searchText)}"
                 oninput="model.viewState.contactsPage.searchText = this.value">
             <button onclick="updateView()">Filtrer</button>
         </div>
@@ -721,11 +722,11 @@ Når en kontakt skal redigeres:
 function startEditContact(contactId) {
     const contact = findObjectById(model.contacts, contactId);
 
-    const ViewState = model.viewState.editContactPage;
-    ViewState.contactId = contact.id;
-    ViewState.name = contact.name;
-    ViewState.phone = contact.phone;
-    ViewState.email = contact.email;
+    const viewState = model.viewState.editContactPage;
+    viewState.contactId = contact.id;
+    viewState.name = contact.name;
+    viewState.phone = contact.phone;
+    viewState.email = contact.email;
 
     model.app.currentPage = 'editContactPage';
 
@@ -745,12 +746,12 @@ Lag gjerne egne funksjoner:
 
 ```js
 function clearEditContactViewState() {
-    const ViewState = model.viewState.editContactPage;
-    ViewState.contactId = null;
-    ViewState.name = '';
-    ViewState.phone = '';
-    ViewState.email = '';
-    ViewState.selectedGroupIds = [];
+    const viewState = model.viewState.editContactPage;
+    viewState.contactId = null;
+    viewState.name = '';
+    viewState.phone = '';
+    viewState.email = '';
+    viewState.selectedGroupIds = [];
 }
 ```
 
@@ -765,12 +766,12 @@ Vi ønsker å unngå unødvendig mutasjon av eksisterende domenedata.
 Når en kontakt lagres, lag et nytt objekt:
 
 ```js
-const ViewState = model.viewState.editContactPage;
+const viewState = model.viewState.editContactPage;
 const updatedContact = {
     id: contactId,
-    name: ViewState.name,
-    phone: ViewState.phone,
-    email: ViewState.email,
+    name: viewState.name,
+    phone: viewState.phone,
+    email: viewState.email,
 };
 ```
 
@@ -1414,7 +1415,7 @@ Før du anser løsningen som ferdig, spør:
 - Har jeg én global `model`?
 - Har jeg `model.app` for state som gjelder hele appen?
 - Har jeg `model.viewState` for midlertidig state per side?
-- Bruker jeg det lokale navnet `ViewState` når samme sidestate gjentas i en funksjon?
+- Bruker jeg det lokale navnet `viewState` når samme sidestate gjentas i en funksjon?
 - Lagrer tekstinput bare til state, med en egen knapp for handling eller ny tegning?
 - Ligger domenedataene i egne arrays?
 - Har objektene ID-er?

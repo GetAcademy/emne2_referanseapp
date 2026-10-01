@@ -1,5 +1,5 @@
 function updateViewContactsPage() {
-    const ViewState = model.viewState.contactsPage;
+    const viewState = model.viewState.contactsPage;
     const contacts = getFilteredContacts();
     document.getElementById('app').innerHTML = /*HTML*/`
         <div class="page-heading">
@@ -9,7 +9,7 @@ function updateViewContactsPage() {
         <label for="search">Søk etter navn, telefon eller e-post</label>
         <div class="search-row">
             <input id="search" type="search"
-                value="${escapeHtml(ViewState.searchText)}"
+                value="${escapeHtml(viewState.searchText)}"
                 oninput="model.viewState.contactsPage.searchText = this.value">
             <button onclick="updateView()">Filtrer</button>
         </div>

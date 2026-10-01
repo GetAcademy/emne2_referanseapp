@@ -1,12 +1,12 @@
 function updateViewGroupsPage() {
-    const ViewState = model.viewState.groupsPage;
+    const viewState = model.viewState.groupsPage;
     document.getElementById('app').innerHTML = /*HTML*/`
         <h1>Grupper</h1>
         <form class="new-group" onsubmit="createGroup(); return false;">
             <label for="new-group">Navn på ny gruppe</label>
             <div class="actions">
                 <input id="new-group" required
-                    value="${escapeHtml(ViewState.newGroupName)}"
+                    value="${escapeHtml(viewState.newGroupName)}"
                     oninput="model.viewState.groupsPage.newGroupName = this.value">
                 <button type="submit">Opprett gruppe</button>
             </div>

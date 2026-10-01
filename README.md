@@ -43,7 +43,7 @@ inputfelt fra DOM og bygger ingen HTML. Enkle input-hendelser skriver direkte
 til `model.viewState`; domenedata endres bare gjennom controllerne.
 
 Når sidens state brukes flere ganger i en funksjon, bruker vi det lokale navnet
-`ViewState`, for eksempel `const ViewState = model.viewState.editContactPage`.
+`viewState`, for eksempel `const viewState = model.viewState.editContactPage`.
 Dette er en referanse til samme objekt. Modellfeltet heter fortsatt `viewState`.
 Inline-hendelser bruker full modellsti, siden de ikke har tilgang til lokale
 variabler fra view-funksjonen.
