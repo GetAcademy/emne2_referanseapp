@@ -1,14 +1,6 @@
 function updateViewContactsPage() {
-    // Søk tegner hele siden på nytt. Bevar markøren hvis søkefeltet er aktivt.
-    // Dette er en DOM-detalj i viewet, ikke state som hører til i modellen.
-    const searchInput = document.getElementById('search');
-    let cursorPosition = null;
-    if (searchInput !== null && document.activeElement === searchInput) {
-        cursorPosition = searchInput.selectionStart;
-    }
-
     const contacts = getFilteredContacts();
-    let html = /*HTML*/`
+    document.getElementById('app').innerHTML = /*HTML*/`
         <div class="page-heading">
             <h1>Kontakter</h1>
             <button onclick="startNewContact()">Ny kontakt</button>
@@ -18,22 +10,20 @@ function updateViewContactsPage() {
             value="${escapeHtml(model.viewState.contactsPage.searchText)}"
             oninput="model.viewState.contactsPage.searchText = this.value; updateView()">
         <p class="muted">${contacts.length} av ${model.contacts.length} kontakter</p>
-        <div class="cards">`;
+        <div class="cards">
+          ${createContactsHtml()}
+        </div>`;
+}
 
+function createContactsHtml() {
+    if (contacts.length === 0) {
+        return '<p>Ingen kontakter å vise. Prøv et annet søk eller opprett en kontakt.</p>';
+    }
+    let html = '';
     for (let contact of contacts) {
         html += createContactHtml(contact);
     }
-    if (contacts.length === 0) {
-        html += '<p>Ingen kontakter å vise. Prøv et annet søk eller opprett en kontakt.</p>';
-    }
-    html += '</div>';
-    document.getElementById('app').innerHTML = html;
-
-    if (cursorPosition !== null) {
-        const newSearchInput = document.getElementById('search');
-        newSearchInput.focus();
-        newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
-    }
+    return html;
 }
 
 function createContactHtml(contact) {
