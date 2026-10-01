@@ -1,5 +1,4 @@
 function goToContactsPage() {
-    clearEditContactViewState();
     model.app.currentPage = 'contactsPage';
     updateView();
 }
@@ -8,10 +7,10 @@ function goToContactsPage() {
 function deleteContact(contactId) {
     // ID identifiserer kontakten også etter søk. Indeks er bare plassering.
     const contact = findObjectById(model.contacts, contactId);
-    if (contact !== null) {
-        const index = model.contacts.indexOf(contact);
-        model.contacts.splice(index, 1);
-    }
+    if (contact == null) return;
+
+    const index = model.contacts.indexOf(contact);
+    model.contacts.splice(index, 1);
 
     // splice endrer arrayen. Gå baklengs så forskjøvede elementer ikke hoppes over.
     for (let i = model.memberships.length - 1; i >= 0; i--) {

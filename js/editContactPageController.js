@@ -16,16 +16,17 @@ function startEditContact(contactId) {
     const contact = findObjectById(model.contacts, contactId);
     if (contact === null) return;
 
+    const viewState = model.viewState.editContactPage;
     // PRINSIPP: viewState er arbeidsutkastet. model.contacts er lagrede data.
     // Vi kopierer feltene; domenedata endres først når brukeren trykker Lagre.
-    model.viewState.editContactPage.contactId = contact.id;
-    model.viewState.editContactPage.name = contact.name;
-    model.viewState.editContactPage.phone = contact.phone;
-    model.viewState.editContactPage.email = contact.email;
-    model.viewState.editContactPage.selectedGroupIds = [];
+    viewState.contactId = contact.id;
+    viewState.name = contact.name;
+    viewState.phone = contact.phone;
+    viewState.email = contact.email;
+    viewState.selectedGroupIds = [];
     for (let membership of model.memberships) {
         if (membership.contactId === contactId) {
-            model.viewState.editContactPage.selectedGroupIds.push(membership.groupId);
+            viewState.selectedGroupIds.push(membership.groupId);
         }
     }
     model.app.currentPage = 'editContactPage';

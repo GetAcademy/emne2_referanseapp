@@ -1,7 +1,7 @@
 function updateViewEditContactPage() {
-    const draft = model.viewState.editContactPage;
+    const viewState = model.viewState.editContactPage;
     let heading = 'Rediger kontakt';
-    if (draft.contactId === null) heading = 'Ny kontakt';
+    if (viewState.contactId === null) heading = 'Ny kontakt';
 
     // Input endrer bare viewState. Lagre-knappen kaller controlleren.
     document.getElementById('app').innerHTML = /*HTML*/`
@@ -9,13 +9,13 @@ function updateViewEditContactPage() {
         <p class="muted">Lagre beholder endringene. Avbryt eller navigasjon forkaster utkastet.</p>
         <form onsubmit="saveContact(); return false;">
             <label for="name">Navn (obligatorisk)</label>
-            <input id="name" required value="${escapeHtml(draft.name)}"
+            <input id="name" required value="${escapeHtml(viewState.name)}"
                 oninput="model.viewState.editContactPage.name = this.value">
             <label for="phone">Telefon</label>
-            <input id="phone" type="tel" value="${escapeHtml(draft.phone)}"
+            <input id="phone" type="tel" value="${escapeHtml(viewState.phone)}"
                 oninput="model.viewState.editContactPage.phone = this.value">
             <label for="email">E-post</label>
-            <input id="email" type="email" value="${escapeHtml(draft.email)}"
+            <input id="email" type="email" value="${escapeHtml(viewState.email)}"
                 oninput="model.viewState.editContactPage.email = this.value">
             <fieldset><legend>Grupper</legend>
                 ${createGroupCheckboxesHtml()}

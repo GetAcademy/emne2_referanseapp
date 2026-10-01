@@ -516,6 +516,52 @@ Dette gjør at editoren lettere kan syntax-highlighte HTML-en.
 
 Når samme HTML-struktur brukes flere ganger, lager vi gjerne en funksjon.
 
+Vi bruker også hjelpefunksjoner for å gjøre selve sideviewet oversiktlig.
+Sideviewet viser sidestrukturen i én sammenhengende HTML-template, og delene
+settes rett inn med `${...}`. Løkker og håndtering av tomme lister ligger i
+hjelpefunksjonene.
+
+Eksempel på et forenklet kontaktview:
+
+```js
+function updateViewContactsPage() {
+    const contacts = getFilteredContacts();
+    document.getElementById('app').innerHTML = /*HTML*/`
+        <h1>Kontakter</h1>
+        <button onclick="startNewContact()">Ny kontakt</button>
+        <div class="cards">
+            ${createContactsHtml(contacts)}
+        </div>
+    `;
+}
+
+function createContactsHtml(contacts) {
+    if (contacts.length === 0) {
+        return '<p>Ingen kontakter å vise.</p>';
+    }
+    let html = '';
+    for (let contact of contacts) {
+        html += createContactHtml(contact);
+    }
+    return html;
+}
+```
+
+Listen sendes inn som parameter. En hjelpefunksjon kan ikke lese en lokal
+variabel inne i funksjonen som kaller den.
+
+Samme mønster brukes for eksempel med `${createGroupsHtml()}`,
+`${createGroupCheckboxesHtml()}` og `${createGroupMembersHtml(contacts)}`.
+Hjelpefunksjonene returnerer HTML; sideviewet skriver den til `#app`.
+De skal ikke endre domenedata.
+
+Dette etterligner litt måten vi setter sammen komponenter i Vue eller React:
+en del av visningen settes inn i en større visning. Her er hver slik del en
+vanlig JavaScript-funksjon som returnerer en HTML-streng.
+
+Trekk ut deler når det gjør sidestrukturen lettere å lese, også når delen bare
+brukes ett sted. Vi trenger ikke en egen funksjon for hver HTML-tag.
+
 Eksempel:
 
 ```js
@@ -679,9 +725,11 @@ dersom det enkelt kan unngås.
 
 ---
 
-# 22. Lag nye arrays
+# 22. Nye arrays ved lagring, `splice` ved sletting
 
-Vi foretrekker også å lage en ny array når innholdet i domenedata endres.
+Ved oppretting og redigering foretrekker vi å lage nye arrays. Ved sletting
+velger vi `splice`, som endrer den eksisterende arrayen. Dette er et bevisst
+valg fordi det gir kort og lettlest kode. Mutasjon er ikke generelt forbudt.
 
 På dette tidspunktet i kurset bruker vi løkker.
 
@@ -705,6 +753,44 @@ Dette er bevisst eksplisitt kode.
 
 Senere kan samme kode skrives kortere med andre JavaScript-teknikker.
 
+## Sletting med `splice`
+
+Handlingen tar fortsatt inn en ID. Vi finner objektet med `findObjectById`,
+finner plasseringen med `indexOf`, og sletter med `splice(index, 1)`:
+
+```js
+function deleteContact(contactId) {
+    const contact = findObjectById(model.contacts, contactId);
+    if (contact !== null) {
+        const index = model.contacts.indexOf(contact);
+        model.contacts.splice(index, 1);
+    }
+
+    for (let i = model.memberships.length - 1; i >= 0; i--) {
+        if (model.memberships[i].contactId === contactId) {
+            model.memberships.splice(i, 1);
+        }
+    }
+    updateView();
+}
+```
+
+Indeksen brukes bare til selve array-operasjonen; ID-en identifiserer kontakten.
+Vi sjekker at kontakten finnes, så vi ikke ender med `splice(-1, 1)`, som ville
+slettet siste element.
+
+Når flere elementer skal slettes, går vi baklengs. Ved sletting flyttes senere
+elementer én plass mot starten. En løkke som går forlengs kan derfor hoppe over
+et treff. Baklengs gjennomgang unngår dette, også når treffene ligger ved siden
+av hverandre.
+
+Et alternativ er å samle ID-ene som skal slettes først, og deretter finne og
+slette hvert objekt. Da må vi finne plasseringen på nytt for hver sletting;
+gamle indekser kan ha endret seg. For medlemskapene over er baklengs løkke enklest.
+
+`splice` beholder selve arrayen, men endrer innholdet. Andre referanser til den
+samme arrayen ser også slettingen. Testene skal gjenspeile dette valget.
+
 ---
 
 # 23. JavaScript-nivået i Emne 2
@@ -721,6 +807,7 @@ Vi bruker gjerne:
 - `for`
 - `for...of`
 - `push`
+- `splice` til sletting
 - `includes`
 - `indexOf`
 - template strings
@@ -789,7 +876,8 @@ Ikke bruk:
 array.filter(...)
 ```
 
-Bygg en ny array med en løkke.
+Ved filtrering for visning bygger vi en ny resultatliste med en løkke.
+Ved sletting bruker vi `splice`, som beskrevet i del 22.
 
 ---
 
@@ -1106,6 +1194,8 @@ Eksempler:
 - opprette kontakt
 - redigere kontakt
 - slette kontakt
+- slette alle tilhørende medlemskap, også flere treff ved siden av hverandre
+- forsøke å slette en ukjent ID uten å slette feil objekt
 - opprette gruppe
 - oppdatere medlemskap
 - `findObjectById`
@@ -1159,8 +1249,13 @@ KI skal blant annet se etter:
 - brukes spread syntax?
 - brukes `Object.assign`?
 - kunne avansert kode vært erstattet av en enkel løkke og en hjelpefunksjon?
+- kan sideviewet bli tydeligere med HTML-hjelpefunksjoner satt inn via `${...}`?
+- bruker sletting `splice`, med baklengs løkke når flere treff skal fjernes?
 
 KI skal ikke «modernisere» løsningen ved å introdusere teknikker som dette dokumentet eksplisitt sier at vi ikke bruker.
+
+KI skal heller ikke foreslå å erstatte `splice` bare for å unngå mutasjon.
+Sletting med `splice` er en del av den valgte kodestilen.
 
 ---
 
@@ -1184,7 +1279,7 @@ Eksempel:
 
 Eller:
 
-> Her brukes `filter()`. Studentene har ikke lært `filter()` ennå. Lag i stedet en ny array og fyll den ved hjelp av en `for...of`-løkke. Legg gjerne løkken i en hjelpefunksjon hvis controlleren ellers blir uoversiktlig.
+> Her brukes `filter()` til å finne søketreff. Studentene har ikke lært `filter()` ennå. Lag i stedet en ny array og fyll den ved hjelp av en `for...of`-løkke. Legg gjerne løkken i en hjelpefunksjon. Hvis hensikten er sletting, bruker vi `splice`.
 
 ---
 
@@ -1271,6 +1366,9 @@ Før du anser løsningen som ferdig, spør:
 - Kaller controlleren `updateView()` etter relevante endringer?
 - Bruker jeg `updateView()` som hovedfunksjon for sidevalg?
 - Har jeg trukket ut gjentatt HTML i små funksjoner der det er nyttig?
+- Viser sideviewet sidestrukturen tydelig, med deler satt inn via `${...}`?
+- Ligger løkker og tomtilfeller for HTML-lister i passende hjelpefunksjoner?
+- Bruker jeg `splice` ved sletting og unngår å hoppe over treff når flere slettes?
 - Har jeg trukket ut kompliserte løkker i hjelpefunksjoner?
 - Har jeg unngått `map`, `filter`, `find` og `reduce`?
 - Har jeg unngått spread syntax og `Object.assign`?

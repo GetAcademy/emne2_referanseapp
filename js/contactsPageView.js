@@ -8,11 +8,13 @@ function updateViewContactsPage() {
         <label for="search">Søk etter navn, telefon eller e-post</label>
         <input id="search" type="search"
             value="${escapeHtml(model.viewState.contactsPage.searchText)}"
-            oninput="model.viewState.contactsPage.searchText = this.value; updateView()">
+            oninput="model.viewState.contactsPage.searchText = this.value;">
+        <button onclick="updateView()">Filtrer</button>
         <p class="muted">${contacts.length} av ${model.contacts.length} kontakter</p>
         <div class="cards">
           ${createContactsHtml(contacts)}
-        </div>`;
+        </div>
+    `;
 }
 
 function createContactsHtml(contacts) {
