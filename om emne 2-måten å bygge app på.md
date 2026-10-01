@@ -1,158 +1,277 @@
 # Emne 2-måten å bygge en applikasjon
 
-I Emne 2 går vi fra å kunne programmere enkeltstående ting til å utvikle en fungerende applikasjon for en kunde. Målet er ikke først og fremst å lære et bestemt rammeverk. Målet er å lære en enkel og systematisk måte å tenke utvikling på: fra kundens behov, via skjermbilder og modell, til en ferdig applikasjon.
+Dette dokumentet beskriver den måten vi bygger frontend-applikasjoner på i Emne 2 ved GET Academy.
 
-Metoden er med vilje enkel. Den skal være mulig å bruke tidlig i programmeringsopplæringen, samtidig som den introduserer prinsipper som også er viktige i større frontend-rammeverk.
+Dokumentet skal kunne brukes:
 
-## Fra behov til kode
+- av studenter som referanse under utvikling
+- av lærere i undervisning
+- sammen med egen kode når en student ber KI evaluere løsningen
+- som grunnlag for å be KI lage eller forbedre en Emne 2-applikasjon
 
-Vi går normalt gjennom fire hovedsteg:
+Det er derfor viktig at både **arkitekturen** og **det tekniske nivået** i dette dokumentet følges.
 
-**1. Forstå bestillingen**  
-Vi møter kunden, stiller spørsmål og prøver å forstå behovet. Etter møtet oppsummerer vi forståelsen vår skriftlig og lar kunden korrigere eventuelle misforståelser.
+Målet er ikke å bruke mest mulig moderne JavaScript.
 
-**2. Tegne skjermbilder**  
-Vi lager grove skisser av løsningen. Poenget er ikke grafisk design, men å konkretisere hvordan brukeren skal bruke systemet.
+Målet er å bruke enkle teknikker studentene allerede kjenner, samtidig som vi lærer gode prinsipper for modellering, dataflyt og struktur.
 
-For hvert skjermbilde spør vi blant annet:
+---
 
-- Hva skal brukeren se?
-- Hva kan brukeren gjøre?
-- Hva skjer når brukeren gjør det?
-- Hvordan kommer brukeren videre til neste skjermbilde?
+# 1. Hva Emne 2 handler om
 
-Skjermbildene skal også hjelpe oss til å oppdage spørsmål og uklarheter vi ikke så tidligere.
+I Emne 2 går vi fra å kunne programmere enkeltstående funksjoner til å lage en fungerende applikasjon for en kunde.
 
-**3. Lage modellen**  
-Når skjermbildene er tydelige, finner vi ut hvilken state og hvilke data applikasjonen trenger.
+Vi trener blant annet på:
+
+- kundedialog
+- analyse
+- skjermbilder
+- modellering
+- frontend-arkitektur
+- teamarbeid
+- Git/GitHub
+- testing
+- iterativ utvikling
+
+Den overordnede prosessen er:
+
+**kundebehov → tekstlig oppsummering → skjermbilder → modell → implementasjon**
+
+Vi prøver å redusere usikkerhet steg for steg før vi skriver mye kode.
+
+---
+
+# 2. Fra kundebehov til modell
+
+Vi starter ikke med modellen.
+
+Vi starter med brukerens behov og skjermbildene.
+
+For hvert skjermbilde spør vi:
+
+1. Hva må vises?
+2. Hva holder brukeren på med akkurat nå?
+3. Hva kan brukeren gjøre?
+4. Hva må modellen kunne huske eller endre når brukeren gjør dette?
+
+På denne måten lar vi skjermbildene hjelpe oss å finne modellen.
 
 Et viktig prinsipp er:
 
-> Ikke finn på modellen uavhengig av skjermbildene. La skjermbildene og brukerens handlinger fortelle hva modellen trenger.
-
-**4. Implementere applikasjonen**  
-Til slutt lager vi view- og controller-koden som bruker modellen. Hvis de foregående stegene er gjort grundig, skal mye av implementasjonen følge naturlig av skjermbildene og modellen.
+> Ikke finn på modellen separat fra brukergrensesnittet.  
+> La skjermbildene og brukerhandlingene fortelle hva modellen trenger.
 
 ---
 
-# Modellen
+# 3. Den overordnede modellen
 
-Vi deler modellen i tre hovedområder:
+Vi bruker én global variabel som heter:
 
 ```js
-const model = {
-    app: {
-    },
-
-    viewState: {
-    },
-
-    data: {
-    },
+const Model = {
 };
 ```
 
-## 1. `app`
+Den ligger i en egen fil:
 
-Her ligger state som gjelder hele applikasjonen.
-
-Eksempler:
-
-```js
-app: {
-    currentPage: 'productsPage',
-    loggedInUserId: null,
-}
+```text
+model.js
 ```
 
-`currentPage` forteller hvilket hovedskjermbilde som skal vises.
+En typisk modell ser slik ut:
 
-Hvis en bruker er logget inn, kan `loggedInUserId` peke på en bruker i `data.users`.
+```js
+const Model = {
+    app: {
+        currentPage: 'contactsPage',
+    },
 
-DOM-elementer, produkter, ordre og lignende hører ikke hjemme her.
+    ViewState: {
+        contactsPage: {
+            searchText: '',
+        },
+
+        editContactPage: {
+            contactId: null,
+            name: '',
+            phone: '',
+            email: '',
+        },
+    },
+
+    contacts: [],
+    groups: [],
+    memberships: [],
+};
+```
+
+Vi bruker altså tre hovedtyper informasjon:
+
+- `Model.app`
+- `Model.ViewState`
+- domenedata direkte på `Model`
+
+Vi bruker ikke nødvendigvis et ekstra `data`-objekt rundt domenedataene.
 
 ---
 
-# 2. `viewState`
+# 4. `Model.app`
 
-`viewState` beskriver det brukeren holder på med akkurat nå i brukergrensesnittet.
-
-Vi organiserer vanligvis view state etter sider:
-
-```js
-viewState: {
-    productsPage: {
-        searchText: '',
-        selectedCategoryId: null,
-    },
-
-    editContactPage: {
-        contactId: null,
-        name: '',
-        phone: '',
-        email: '',
-    },
-
-    shoppingCartPage: {
-        pickupDate: null,
-        pickupTime: null,
-    },
-}
-```
-
-Et nyttig spørsmål er:
-
-> Er dette noe systemet vet, eller noe brukeren holder på med akkurat nå?
-
-Hvis kunden for eksempel finnes i systemet med navnet «Per Hansen», er dette data.
-
-Hvis brukeren akkurat nå redigerer navnet i et inputfelt og har skrevet «Per Hans», er dette view state.
-
-View state fungerer derfor ofte som et **arbeidsutkast**.
-
-Når brukeren trykker Lagre, kan controlleren bruke verdiene i view state til å oppdatere de faktiske dataene.
-
-Når brukeren trykker Avbryt, kan vi bare forkaste arbeidsutkastet.
-
----
-
-# 3. `data`
-
-Her ligger de faktiske tingene applikasjonen handler om.
+`Model.app` inneholder state som gjelder hele applikasjonen.
 
 Eksempel:
 
 ```js
-data: {
-    contacts: [
-        { id: 1, name: 'Terje', phone: '123' },
-        { id: 2, name: 'Per', phone: '456' },
-    ],
-
-    groups: [
-        { id: 1, name: 'Sykling' },
-        { id: 2, name: 'Reising' },
-    ],
+app: {
+    currentPage: 'contactsPage',
+    loggedInUserId: null,
 }
 ```
 
-Vi prøver som hovedregel å ha **én liste per type entitet**.
+Typiske verdier her er:
 
-For eksempel:
+- hvilken side som vises
+- hvilken bruker som er logget inn
+- annen state som gjelder hele applikasjonen
+
+Ikke legg DOM-elementer her.
+
+Dette er feil:
 
 ```js
-students: []
-courses: []
-enrollments: []
+app: document.getElementById('app')
 ```
 
-heller enn å bygge store og dype strukturer hvor kurs ligger inni studenter eller studenter ligger inni kurs.
+`Model` skal inneholde state og data, ikke referanser til HTML-elementer.
 
 ---
 
-# Koble objekter sammen med ID-er
+# 5. `Model.ViewState`
 
-Når ulike typer data hører sammen, bruker vi vanligvis ID-er.
+`ViewState` beskriver hva brukeren holder på med akkurat nå.
+
+Eksempel:
+
+```js
+ViewState: {
+    editContactPage: {
+        contactId: 1,
+        name: 'Terje',
+        phone: '12345678',
+        email: 'terje@example.com',
+    },
+}
+```
+
+Dette er ikke nødvendigvis de lagrede dataene.
+
+Det er et arbeidsutkast.
+
+Hvis kontakten i `Model.contacts` heter:
+
+```js
+{
+    id: 1,
+    name: 'Terje'
+}
+```
+
+og brukeren har begynt å endre navnet til:
+
+```text
+Terje K
+```
+
+skal ikke kontaktobjektet endres ennå.
+
+I stedet skal:
+
+```js
+Model.ViewState.editContactPage.name
+```
+
+inneholde:
+
+```js
+'Terje K'
+```
+
+Først når brukeren trykker Lagre, endrer controlleren de faktiske domenedataene.
+
+Dette gjør blant annet Avbryt enkelt å implementere.
+
+---
+
+# 6. Domenedata
+
+De faktiske tingene applikasjonen handler om ligger direkte på `Model`.
+
+Eksempel:
+
+```js
+contacts: [
+    {
+        id: 1,
+        name: 'Terje',
+        phone: '12345678',
+        email: 'terje@example.com',
+    },
+],
+
+groups: [
+    {
+        id: 1,
+        name: 'Sykling',
+    },
+],
+```
+
+Eksempler på domenedata kan være:
+
+- contacts
+- groups
+- students
+- courses
+- products
+- orders
+- users
+
+Som hovedregel har vi én liste per entitetstype.
+
+---
+
+# 7. Unngå dype datastrukturer
+
+Vi prøver å unngå at objekter inneholder store kopier av andre objekter.
+
+Dette er ofte uheldig:
+
+```js
+contacts: [
+    {
+        id: 1,
+        name: 'Terje',
+        groups: [
+            {
+                id: 1,
+                name: 'Sykling',
+            },
+            {
+                id: 2,
+                name: 'Reising',
+            },
+        ],
+    },
+]
+```
+
+Da finnes gruppeinformasjonen flere steder.
+
+I stedet bruker vi egne lister.
+
+---
+
+# 8. Koble entiteter sammen med ID-er
 
 Eksempel:
 
@@ -162,343 +281,1018 @@ contacts: [
 ],
 
 groups: [
-    { id: 10, name: 'Sykling' },
-    { id: 20, name: 'Reising' },
+    { id: 1, name: 'Sykling' },
+    { id: 2, name: 'Reising' },
 ],
 
 memberships: [
-    { contactId: 1, groupId: 10 },
-    { contactId: 1, groupId: 20 },
-]
+    { contactId: 1, groupId: 1 },
+    { contactId: 1, groupId: 2 },
+],
 ```
 
-Da slipper vi å kopiere hele gruppeobjekter inn i kontakten.
+`memberships` beskriver relasjonen mellom kontakter og grupper.
 
 Det samme prinsippet kan brukes på:
 
-- studenter, kurs og påmeldinger
-- ordre, produkter og ordrelinjer
-- brukere og roller
-- filmer og sjangre
+```text
+students
+courses
+enrollments
+```
 
-Dette ligner måten man modellerer relasjoner i en relasjonsdatabase.
+eller:
+
+```text
+orders
+products
+orderItems
+```
+
+Bruk ID-er for å referere til andre entiteter.
+
+Ikke kopier hele objektet.
 
 ---
 
-# Ikke lagre det som kan beregnes
+# 9. Bruk ID, ikke array-indeks
 
-Modellen bør inneholde det applikasjonen må **huske**.
+En handling skal normalt identifisere et objekt med ID.
 
-Den trenger ikke inneholde alt som skal **vises**.
+Bra:
+
+```js
+editContact(17)
+deleteContact(17)
+showOrder(1336)
+```
+
+Mindre bra:
+
+```js
+editContact(3)
+```
+
+dersom `3` bare betyr «element nummer 3 i arrayen».
+
+Array-rekkefølgen kan endres når vi søker, sorterer eller filtrerer.
+
+ID identifiserer objektet.
+
+---
+
+# 10. Ikke lagre avledede data
+
+Modellen skal inneholde det vi må huske.
+
+Den trenger ikke inneholde alt som skal vises.
 
 Hvis vi har:
 
 ```js
-cartItems: [
-    { productId: 1, quantity: 2 },
-    { productId: 4, quantity: 1 },
+contacts: [
+    { id: 1, name: 'Terje' },
+    { id: 2, name: 'Per' },
 ]
 ```
 
-og prisene finnes på produktene, trenger vi normalt ikke lagre:
+og:
 
 ```js
-totalPrice: 347
+Model.ViewState.contactsPage.searchText
 ```
 
-Totalprisen kan beregnes når den skal vises.
+trenger vi ikke også lagre:
+
+```js
+Model.filteredContacts
+```
+
+Den filtrerte listen kan beregnes når viewet tegnes.
 
 Det samme gjelder blant annet:
 
-- antall varer i handlekurven
 - filtrerte lister
+- totalpris
+- antall elementer
+- gruppenavn til en kontakt
+- medlemmer i en gruppe
 - summer
 - gjennomsnitt
-- tekst som kan settes sammen fra andre data
 
-Dette reduserer risikoen for at to verdier som egentlig beskriver samme ting kommer ut av synk.
+Hovedregel:
+
+> Hvis verdien enkelt kan beregnes fra annen state, bør vi vanligvis beregne den.
 
 ---
 
-# Én sannhet
+# 11. Én sannhet
 
-Unngå å kopiere de samme opplysningene flere steder.
+Unngå å lagre de samme opplysningene flere steder.
 
-Hvis et produkt finnes slik:
+Hvis et produkt finnes i:
+
+```js
+products: [
+    {
+        id: 7,
+        name: 'Cappuccino',
+        price: 45,
+    }
+]
+```
+
+bør handlekurven vanligvis bare lagre:
 
 ```js
 {
-    id: 7,
-    name: 'Cappuccino',
-    price: 45
+    productId: 7,
+    quantity: 2,
 }
 ```
 
-bør ikke handlekurven også lagre:
+Ikke:
 
 ```js
 {
     productId: 7,
     productName: 'Cappuccino',
-    productPrice: 45
+    productPrice: 45,
+    quantity: 2,
 }
 ```
 
-Vanligvis holder dette:
-
-```js
-{
-    productId: 7,
-    quantity: 2
-}
-```
-
-Når viewet trenger navn og pris, finner det produktet ved hjelp av `productId`.
+Navn og pris kan finnes ved hjelp av `productId`.
 
 ---
 
-# Bruk ID-er, ikke plassering i array
+# 12. View
 
-Hvis en bruker klikker på en kontakt, et produkt eller en ordre, bør handlingen normalt identifisere objektet med ID.
-
-For eksempel:
-
-```js
-editContact(17)
-deleteProduct(42)
-showOrder(1336)
-```
-
-Ikke baser logikken på at objektet tilfeldigvis er element nummer 3 i en array.
-
-Array-rekkefølgen kan endre seg når vi søker, filtrerer eller sorterer.
-
-ID-en identifiserer selve objektet.
-
----
-
-# View
-
-Viewets hovedoppgave er å:
+Viewets oppgave er å:
 
 > lese modellen og lage HTML.
 
-En enkel struktur kan være:
+View skal ikke inneholde forretningslogikk som endrer domenedata.
+
+En hovedfunksjon heter:
 
 ```js
 function updateView() {
-    if (model.app.currentPage === 'contactsPage') {
-        document.getElementById('app').innerHTML = contactsPageView();
+}
+```
+
+Denne ser på:
+
+```js
+Model.app.currentPage
+```
+
+og kaller riktig under-view.
+
+Eksempel:
+
+```js
+function updateView() {
+    if (Model.app.currentPage === 'contactsPage') {
+        updateViewContactsPage();
+    }
+    else if (Model.app.currentPage === 'editContactPage') {
+        updateViewEditContactPage();
+    }
+    else if (Model.app.currentPage === 'groupsPage') {
+        updateViewGroupsPage();
     }
 }
 ```
 
-Mindre funksjoner kan brukes som komponenter:
+---
+
+# 13. Sidefunksjoner heter `updateView...`
+
+Eksempel:
 
 ```js
-function contactCard(contact) {
-    return `
+function updateViewContactsPage() {
+}
+```
+
+```js
+function updateViewEditContactPage() {
+}
+```
+
+```js
+function updateViewGroupsPage() {
+}
+```
+
+Hver funksjon bygger HTML og skriver den til:
+
+```js
+document.getElementById('app').innerHTML
+```
+
+---
+
+# 14. HTML i JavaScript
+
+Vi bruker template strings med backticks.
+
+Ved lengre HTML legger vi `/*HTML*/` foran:
+
+```js
+const html = /*HTML*/`
+    <div>
+        <h1>Kontakter</h1>
+    </div>
+`;
+```
+
+Dette gjør at editoren lettere kan syntax-highlighte HTML-en.
+
+---
+
+# 15. Små komponentfunksjoner
+
+Når samme HTML-struktur brukes flere ganger, lager vi gjerne en funksjon.
+
+Eksempel:
+
+```js
+function createContactHtml(contact) {
+    return /*HTML*/`
         <div>
             <h3>${contact.name}</h3>
-            <button onclick="editContact(${contact.id})">
-                Edit
+            <div>${contact.phone}</div>
+
+            <button onclick="startEditContact(${contact.id})">
+                Rediger
             </button>
         </div>
     `;
 }
 ```
 
-En komponent er i denne sammenhengen bare en funksjon som lager HTML som vi trenger flere ganger.
+I Emne 2 betyr «komponent» ofte bare:
 
-Viewet kan også beregne verdier det trenger.
+> en funksjon som returnerer HTML
 
-For eksempel kan det filtrere en liste basert på `searchText`, eller beregne summen av en handlekurv.
+Vi introduserer ikke et komponentrammeverk.
 
 ---
 
-# Controller
+# 16. Controller
 
-Controller-funksjoner håndterer handlinger som endrer applikasjonen.
+Controller-funksjoner håndterer brukerhandlinger.
 
 Eksempler:
 
 ```js
+startNewContact()
+startEditContact(contactId)
 saveContact()
-deleteContact(id)
-addToCart(productId)
-completeOrder()
-markOrderReady(orderId)
+deleteContact(contactId)
+createGroup()
 ```
 
-En typisk flyt er:
+En controller-funksjon skal typisk:
 
-**brukeren gjør noe**
+1. lese fra `Model`
+2. endre `Model`
+3. kalle `updateView()`
 
-↓
-
-**controller-funksjonen kjører**
-
-↓
-
-**modellen endres**
-
-↓
-
-**viewet tegnes på nytt**
-
-Controlleren bør først og fremst arbeide med modellen.
-
-Den bør normalt ikke være avhengig av å lese eller manipulere DOM direkte.
-
-Det gjør koden enklere å forstå og enklere å teste.
+Controlleren skal ikke bygge HTML.
 
 ---
 
-# Lag nye objekter og arrays
+# 17. Den grunnleggende dataflyten
 
-Når modellen endres, foretrekker vi som hovedregel å lage nye objekter og arrays fremfor å endre eksisterende strukturer direkte.
+Dette er en sentral idé i Emne 2:
+
+```text
+USER ACTION
+     ↓
+CONTROLLER
+     ↓
+MODEL CHANGES
+     ↓
+updateView()
+     ↓
+NEW HTML
+```
+
+Eller:
+
+**brukerhandling → controller → modell → view**
+
+Viewet leser modellen.
+
+Controlleren endrer modellen.
+
+---
+
+# 18. Input kan skrive direkte til ViewState
+
+Enkle inputfelt kan oppdatere `ViewState` direkte.
+
+Eksempel:
+
+```html
+<input
+    value="${Model.ViewState.editContactPage.name}"
+    oninput="Model.ViewState.editContactPage.name = this.value"
+/>
+```
+
+Dette er greit fordi vi bare oppdaterer midlertidig view state.
+
+Vi skal derimot ikke endre domenedata direkte fra HTML-eventet.
+
+---
+
+# 19. ViewState som arbeidsutkast
+
+Når en kontakt skal redigeres:
+
+```js
+function startEditContact(contactId) {
+    const contact = findObjectById(Model.contacts, contactId);
+
+    Model.ViewState.editContactPage.contactId = contact.id;
+    Model.ViewState.editContactPage.name = contact.name;
+    Model.ViewState.editContactPage.phone = contact.phone;
+    Model.ViewState.editContactPage.email = contact.email;
+
+    Model.app.currentPage = 'editContactPage';
+
+    updateView();
+}
+```
+
+Brukeren redigerer nå `ViewState`.
+
+Den lagrede kontakten endres først ved Lagre.
+
+---
+
+# 20. Nullstill ViewState tydelig
+
+Lag gjerne egne funksjoner:
+
+```js
+function clearEditContactViewState() {
+    Model.ViewState.editContactPage.contactId = null;
+    Model.ViewState.editContactPage.name = '';
+    Model.ViewState.editContactPage.phone = '';
+    Model.ViewState.editContactPage.email = '';
+    Model.ViewState.editContactPage.selectedGroupIds = [];
+}
+```
+
+Bruk denne når det gjør koden tydeligere.
+
+---
+
+# 21. Lag nye objekter ved domenendringer
+
+Vi ønsker å unngå unødvendig mutasjon av eksisterende domenedata.
+
+Når en kontakt lagres, lag et nytt objekt:
+
+```js
+const updatedContact = {
+    id: contactId,
+    name: Model.ViewState.editContactPage.name,
+    phone: Model.ViewState.editContactPage.phone,
+    email: Model.ViewState.editContactPage.email,
+};
+```
+
+Ikke bruk:
+
+```js
+contact.name = ...
+contact.phone = ...
+```
+
+dersom det enkelt kan unngås.
+
+---
+
+# 22. Lag nye arrays
+
+Vi foretrekker også å lage en ny array når innholdet i domenedata endres.
+
+På dette tidspunktet i kurset bruker vi løkker.
 
 Eksempel:
 
 ```js
-model.data.contacts = [
-    ...model.data.contacts,
-    newContact
-];
+const newContacts = [];
+
+for (let contact of Model.contacts) {
+    if (contact.id === contactId) {
+        newContacts.push(updatedContact);
+    } else {
+        newContacts.push(contact);
+    }
+}
+
+Model.contacts = newContacts;
 ```
 
-i stedet for:
+Dette er bevisst eksplisitt kode.
 
-```js
-model.data.contacts.push(newContact);
-```
-
-Og:
-
-```js
-model.data.contacts =
-    model.data.contacts.filter(contact => contact.id !== id);
-```
-
-i stedet for å bruke `splice()` på den eksisterende arrayen.
-
-Dette gjør dataflyten mer forutsigbar og reduserer problemer knyttet til delte objektreferanser.
+Senere kan samme kode skrives kortere med andre JavaScript-teknikker.
 
 ---
 
-# Hold controller-logikken testbar
+# 23. JavaScript-nivået i Emne 2
 
-En nyttig test er:
+Det er viktig at løsninger og KI-forslag bruker teknikker studentene faktisk kjenner.
 
-> Kan jeg teste controller-funksjonen uten en nettleserside?
+Vi bruker gjerne:
 
-Hvis vi har:
+- variabler
+- objekter
+- arrays
+- funksjoner
+- `if` / `else`
+- `for`
+- `for...of`
+- `push`
+- `includes`
+- `indexOf`
+- template strings
+- `getElementById`
+- inline `onclick`
+- inline `oninput`
+- inline `onchange`
+
+Vi bruker enkle hjelpefunksjoner for å skjule repeterende løkkelogikk.
+
+---
+
+# 24. Dette skal ikke brukes ennå
+
+KI skal ikke foreslå eller innføre følgende i en Emne 2-løsning på dette tidspunktet:
+
+## JavaScript modules
+
+Ikke bruk:
 
 ```js
-function deleteContact(id) {
-    model.data.contacts =
-        model.data.contacts.filter(contact => contact.id !== id);
+import
+export
+```
+
+Ikke bruk:
+
+```html
+<script type="module">
+```
+
+---
+
+## Node / npm / Vite
+
+Ikke bruk:
+
+- Node
+- npm
+- package.json
+- Vite
+- build scripts
+- bundlere
+
+Applikasjonen skal kunne kjøres som vanlige HTML- og JavaScript-filer.
+
+---
+
+## `map()`
+
+Ikke bruk:
+
+```js
+array.map(...)
+```
+
+Bruk en løkke i stedet.
+
+---
+
+## `filter()`
+
+Ikke bruk:
+
+```js
+array.filter(...)
+```
+
+Bygg en ny array med en løkke.
+
+---
+
+## `find()`
+
+Ikke bruk:
+
+```js
+array.find(...)
+```
+
+Lag heller en hjelpefunksjon:
+
+```js
+function findObjectById(array, id) {
+    for (let object of array) {
+        if (object.id === id) {
+            return object;
+        }
+    }
+
+    return null;
 }
 ```
 
-kan vi sette opp en modell, kjøre funksjonen og kontrollere resultatet.
-
-Hvis funksjonen i stedet er avhengig av `document.getElementById()`, HTML-elementer og andre detaljer i brukergrensesnittet, blir den vanskeligere å teste.
-
-Derfor prøver vi å holde domenelogikken i controlleren og selve HTML-genereringen i viewet.
+Senere kan studenten lære at dette kan skrives kortere med `find()`.
 
 ---
 
-# Fra skjermbilde til kode
+## `reduce()`
 
-Når du står fast, gå tilbake til skjermbildet.
+Ikke bruk `reduce()`.
 
-For hvert skjermbilde kan du spørre:
-
-### Hva må viewet vise?
-
-Dette forteller hvilke data viewet må kunne lese.
-
-### Hva holder brukeren på med akkurat nå?
-
-Dette peker ofte på `viewState`.
-
-### Hva kan brukeren gjøre?
-
-Dette forteller hvilke controller-funksjoner vi trenger.
-
-### Hva må endres eller huskes når brukeren gjør dette?
-
-Dette forteller hvilke deler av modellen controlleren må endre.
-
-På denne måten kan vi ofte gå ganske systematisk fra skjermbilde til ferdig applikasjon.
+Bruk en løkke.
 
 ---
 
-# Den grunnleggende dataflyten
+## Spread syntax
 
-Hele arkitekturen kan oppsummeres slik:
+Ikke bruk:
 
-**MODEL → VIEW**
+```js
+{ ...object }
+```
 
-Viewet leser modellen og tegner brukergrensesnittet.
+eller:
 
-**BRUKER → CONTROLLER → MODEL**
+```js
+[...array]
+```
 
-Når brukeren gjør noe, kaller viewet en controller-funksjon som endrer modellen.
-
-Deretter tegnes viewet på nytt:
-
-**BRUKERHANDLING → CONTROLLER → MODEL → UPDATE VIEW → NYTT SKJERMBILDE**
-
-Dette er den viktigste ideen i måten vi bygger applikasjoner på i Emne 2.
+Lag objekter og arrays eksplisitt.
 
 ---
 
-# Når du vurderer din egen løsning
+## `Object.assign()`
 
-Spør blant annet:
+Ikke bruk:
 
-- Har jeg skilt tydelig mellom `app`, `viewState` og `data`?
-- Ligger midlertidige inputverdier i riktig view state?
-- Ligger de faktiske domenedataene i `data`?
-- Har hver type entitet sin egen liste?
-- Bruker jeg ID-er til å koble objekter sammen?
-- Har jeg kopiert informasjon som allerede finnes et annet sted?
-- Lagrer jeg noe som egentlig kan beregnes?
-- Bruker jeg ID i stedet for array-indeks?
-- Endrer controller-funksjonene modellen uten å være avhengige av DOM?
-- Kan viewet i prinsippet tegnes på nytt bare ved å lese modellen?
-- Lager jeg nye objekter og arrays når state endres?
-- Er det tydelig hvilke controller-funksjoner som svarer på brukerens handlinger?
+```js
+Object.assign(...)
+```
 
-Hvis dette er på plass, har applikasjonen vanligvis en struktur som er både enkel å forstå og mulig å bygge videre på.
+Kopier felter eksplisitt.
 
 ---
 
-# KI som kvalitetssikring
+## Avansert DOM-kode
 
-Når du bruker KI til å evaluere løsningen din, kan du gi KI:
+Unngå unødvendig:
 
-1. denne beskrivelsen av Emne 2-måten
-2. skjermbildene dine
-3. modellen din
-4. controller- og view-koden din
+```js
+querySelector()
+querySelectorAll()
+addEventListener()
+```
 
-Be så KI undersøke om løsningen følger prinsippene over.
+når enkel Emne 2-kode med:
 
-KI bør ikke bare foreslå «bedre kode», men forklare konkrete avvik fra denne arkitekturen:
+```js
+getElementById()
+onclick
+oninput
+onchange
+```
 
-- data som ligger på feil sted
-- dobbeltlagret eller avledet state
-- manglende view state
-- dype eller unødvendig nøstede datastrukturer
-- objekter som burde kobles sammen med ID-er
-- controller-funksjoner som arbeider direkte med DOM
-- view-funksjoner som endrer domenedata
-- bruk av array-indeks der ID burde brukes
-- mutasjon som med fordel kunne vært erstattet av nye objekter eller arrays
+er tilstrekkelig.
 
-Målet er ikke at all kode skal se helt lik ut.
+---
 
-Målet er at vi skal kunne forklare **hvorfor state og data ligger der de ligger, hvordan brukerhandlinger endrer modellen, og hvordan viewet bygges fra modellen**.
+## Ekstra rammeverk og infrastruktur
+
+Ikke introduser:
+
+- React
+- Vue
+- Angular
+- Svelte
+- TypeScript
+- state management-bibliotek
+- router-bibliotek
+- dependency injection
+- services
+- repositories
+- factories
+- classes som arkitekturmønster
+- backend
+- database
+- API
+- localStorage
+- async/await
+- Promises
+
+med mindre oppgaven eksplisitt handler om dette.
+
+---
+
+## Unødvendige tilgjengelighetsattributter
+
+Ikke legg inn ekstra:
+
+```html
+aria-label
+aria-describedby
+role
+tabindex
+```
+
+som studenten ikke har lært.
+
+Dette betyr ikke at tilgjengelighet er uviktig.
+
+Det betyr bare at denne undervisningen har et annet faglig fokus.
+
+---
+
+# 25. Hjelpefunksjoner fremfor avansert syntax
+
+Hvis koden blir omstendelig med løkker, trekk den ut i en hjelpefunksjon.
+
+Eksempel:
+
+```js
+function getGroupsForContact(contactId) {
+    const groups = [];
+
+    for (let membership of Model.memberships) {
+        if (membership.contactId === contactId) {
+            const group = findObjectById(
+                Model.groups,
+                membership.groupId
+            );
+
+            if (group != null) {
+                groups.push(group);
+            }
+        }
+    }
+
+    return groups;
+}
+```
+
+Da kan resten av koden være enkel:
+
+```js
+const groups = getGroupsForContact(contact.id);
+```
+
+Det er bedre enn én kort, men avansert expression studenten ikke forstår.
+
+---
+
+# 26. Kommentarer om senere JavaScript er greit
+
+Det er lov å kommentere at kode kan skrives enklere senere.
+
+For eksempel:
+
+```js
+// Later this could be written shorter using Array.filter().
+```
+
+eller:
+
+```js
+// Later this could be simplified with map() and spread syntax.
+```
+
+Men løsningen skal fortsatt bruke teknikkene som er beskrevet i dette dokumentet.
+
+---
+
+# 27. `common.js`
+
+Generelle hjelpefunksjoner kan ligge i:
+
+```text
+common.js
+```
+
+Eksempler:
+
+```js
+findObjectById(array, id)
+getNextId(array)
+```
+
+Hold filen liten.
+
+Ikke lag et stort utility-bibliotek.
+
+---
+
+# 28. Filstruktur
+
+En typisk app kan ha:
+
+```text
+index.html
+style.css
+
+model.js
+common.js
+
+contactsPageView.js
+contactsPageController.js
+
+editContactPageView.js
+editContactPageController.js
+
+groupsPageView.js
+groupsPageController.js
+
+main.js
+```
+
+Filer lastes inn med vanlige:
+
+```html
+<script src="model.js"></script>
+```
+
+i riktig rekkefølge.
+
+---
+
+# 29. `main.js`
+
+`main.js` skal gjerne være svært enkel.
+
+Eksempel:
+
+```js
+function updateView() {
+    if (Model.app.currentPage === 'contactsPage') {
+        updateViewContactsPage();
+    }
+    else if (Model.app.currentPage === 'editContactPage') {
+        updateViewEditContactPage();
+    }
+    else if (Model.app.currentPage === 'groupsPage') {
+        updateViewGroupsPage();
+    }
+}
+
+updateView();
+```
+
+Dette er nok routing for denne typen SPA.
+
+---
+
+# 30. Testing med QUnit
+
+Studentene har lært QUnit.
+
+Vi bruker derfor QUnit, ikke Vitest.
+
+Testing skal kunne skje i nettleseren uten Node eller npm.
+
+Controller-/modell-logikk bør være mulig å teste uten DOM.
+
+Eksempel:
+
+```js
+QUnit.test('deleteContact removes contact', function(assert) {
+    // arrange
+
+    // act
+
+    // assert
+});
+```
+
+Hvis controlleren kaller `updateView()`, kan testmiljøet bruke en enkel tom funksjon:
+
+```js
+function updateView() {
+}
+```
+
+slik at domenelogikken kan testes isolert.
+
+---
+
+# 31. Hva bør testes?
+
+Eksempler:
+
+- opprette kontakt
+- redigere kontakt
+- slette kontakt
+- opprette gruppe
+- oppdatere medlemskap
+- `findObjectById`
+- `getNextId`
+- andre rene hjelpefunksjoner
+
+Test først og fremst logikk, ikke HTML.
+
+---
+
+# 32. Git og arbeidsflyt
+
+Bruk GitHub gjennom hele arbeidet.
+
+Commit og push ofte.
+
+En god tommelfingerregel er å committe når noe konkret fungerer.
+
+Dette gjør det lettere å:
+
+- samarbeide
+- gå tilbake
+- forstå hva som er endret
+- unngå store konflikter
+
+I denne fasen holder vi Git-bruken enkel.
+
+---
+
+# 33. Når KI evaluerer en løsning
+
+Når dette dokumentet gis til KI sammen med studentens kode, skal KI evaluere løsningen ut fra **denne arkitekturen og dette tekniske nivået**.
+
+KI skal blant annet se etter:
+
+- ligger app-state riktig?
+- ligger midlertidig input-state i `ViewState`?
+- ligger domenedata direkte i `Model`?
+- brukes ID-er mellom entiteter?
+- finnes unødvendige dype strukturer?
+- er data kopiert flere steder?
+- lagres avledede verdier?
+- brukes array-indeks som identitet?
+- endrer view domenedata?
+- bygger controller HTML?
+- er controlleren unødvendig avhengig av DOM?
+- brukes avansert JavaScript studentene ikke har lært?
+- brukes import/export?
+- brukes Node/npm/Vite?
+- brukes `map`, `filter`, `find` eller `reduce`?
+- brukes spread syntax?
+- brukes `Object.assign`?
+- kunne avansert kode vært erstattet av en enkel løkke og en hjelpefunksjon?
+
+KI skal ikke «modernisere» løsningen ved å introdusere teknikker som dette dokumentet eksplisitt sier at vi ikke bruker.
+
+---
+
+# 34. Hvordan KI bør gi tilbakemelding
+
+Tilbakemeldingen bør være pedagogisk.
+
+Ikke bare skriv:
+
+> Dette kan forbedres.
+
+Forklar:
+
+- hvilket prinsipp som brytes
+- hvorfor det er et problem
+- hvordan det kan gjøres på Emne 2-måten
+
+Eksempel:
+
+> `filteredContacts` trenger ikke ligge i modellen. Den kan beregnes fra `contacts` og `searchText` hver gang viewet tegnes. Da unngår vi å ha to versjoner av samme informasjon.
+
+Eller:
+
+> Her brukes `filter()`. Studentene har ikke lært `filter()` ennå. Lag i stedet en ny array og fyll den ved hjelp av en `for...of`-løkke. Legg gjerne løkken i en hjelpefunksjon hvis controlleren ellers blir uoversiktlig.
+
+---
+
+# 35. Ikke overkompliser
+
+Når to løsninger begge fungerer, foretrekker vi vanligvis den studenten lettest kan forstå.
+
+Ikke legg inn abstraksjon bare fordi den er «renere».
+
+Spør heller:
+
+> Gjør dette koden lettere å forstå for en student på dette nivået?
+
+Hvis svaret er nei, la være.
+
+---
+
+# 36. Den viktigste mentale modellen
+
+Hele Emne 2-arkitekturen kan oppsummeres slik:
+
+```text
+MODEL
+  ↓
+VIEW
+  ↓
+USER
+  ↓
+CONTROLLER
+  ↓
+MODEL
+```
+
+Mer konkret:
+
+```text
+USER ACTION
+     ↓
+CONTROLLER
+     ↓
+MODEL CHANGES
+     ↓
+updateView()
+     ↓
+NEW HTML
+```
+
+Og modellen kan igjen forstås slik:
+
+```text
+Model.app
+    =
+state for hele applikasjonen
+
+Model.ViewState
+    =
+det brukeren holder på med akkurat nå
+
+Model.contacts / groups / products / orders / ...
+    =
+de faktiske domenedataene
+```
+
+Hvis denne strukturen er tydelig, har applikasjonen som regel et godt utgangspunkt.
+
+---
+
+# 37. Sjekkliste for studenten
+
+Før du anser løsningen som ferdig, spør:
+
+- Har jeg én global `Model`?
+- Har jeg `Model.app` for state som gjelder hele appen?
+- Har jeg `Model.ViewState` for midlertidig state per side?
+- Ligger domenedataene i egne arrays?
+- Har objektene ID-er?
+- Bruker jeg ID-er til å koble objekter?
+- Har jeg unngått unødvendig nesting?
+- Har jeg unngått dobbeltlagring?
+- Beregner jeg verdier som ikke trenger å lagres?
+- Bruker jeg ID fremfor array-indeks?
+- Leser view modellen uten å endre domenedata?
+- Endrer controller modellen uten å bygge HTML?
+- Kaller controlleren `updateView()` etter relevante endringer?
+- Bruker jeg `updateView()` som hovedfunksjon for sidevalg?
+- Har jeg trukket ut gjentatt HTML i små funksjoner der det er nyttig?
+- Har jeg trukket ut kompliserte løkker i hjelpefunksjoner?
+- Har jeg unngått `map`, `filter`, `find` og `reduce`?
+- Har jeg unngått spread syntax og `Object.assign`?
+- Har jeg unngått modules, Node, npm og Vite?
+- Kan sentral controller-logikk testes med QUnit uten DOM?
+
+Hvis svarene stort sett er ja, følger løsningen Emne 2-måten godt.
+
+---
+
+# 38. Hovedprinsippet
+
+Emne 2-måten er ikke ment som den eneste riktige måten å bygge JavaScript-applikasjoner på.
+
+Det er en **pedagogisk arkitektur** som gjør det mulig å lære viktige prinsipper tidlig:
+
+- state
+- dataflyt
+- MVC-tenkning
+- modellering
+- relasjoner
+- komponenter
+- separasjon av ansvar
+- testing
+
+Senere vil studentene lære flere JavaScript-teknikker og andre frontend-arkitekturer.
+
+I Emne 2 holder vi bevisst teknologien enkel slik at vi kan konsentrere oss om **hvordan en applikasjon er bygget opp og hvorfor**.
