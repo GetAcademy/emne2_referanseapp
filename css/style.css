@@ -34,6 +34,9 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: #24644d; }
 .groups { margin-top: 16px; font-size: .9rem; }
 .new-group .actions { align-items: stretch; }
 .new-group button { white-space: nowrap; }
+.search-row { display: flex; align-items: stretch; gap: 12px; }
+.search-row input { flex: 1; min-width: 0; }
+.search-row button { flex-shrink: 0; padding-inline: 22px; }
 ul { padding-left: 20px; }
 footer { margin-top: 36px; font-size: .85rem; border-top: 1px solid #d7dfd9; }
 @media (max-width: 480px) {

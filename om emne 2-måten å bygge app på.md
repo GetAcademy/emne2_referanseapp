@@ -200,6 +200,32 @@ Først når brukeren trykker Lagre, endrer controlleren de faktiske domenedataen
 
 Dette gjør blant annet Avbryt enkelt å implementere.
 
+## Lokal referanse til sidens state
+
+Når samme `model.viewState.sidenavn` brukes mer enn én gang i en funksjon,
+trekker vi den ut i en lokal variabel med det faste navnet `ViewState`:
+
+```js
+function clearEditContactViewState() {
+    const ViewState = model.viewState.editContactPage;
+    ViewState.contactId = null;
+    ViewState.name = '';
+    ViewState.phone = '';
+    ViewState.email = '';
+    ViewState.selectedGroupIds = [];
+}
+```
+
+`ViewState` viser til samme objekt; det er ingen kopi eller ekstra state.
+Navnet er lokalt for funksjonen og viser til siden funksjonen tilhører.
+Vi bruker dette navnet konsekvent fremfor lokale navn som `draft` eller `viewState`.
+Selve modellfeltet heter fortsatt `viewState` med liten v, og den globale
+variabelen heter fortsatt `model`. Ved bare ett oppslag trengs ikke et alias.
+
+I et view kan `${ViewState.name}` brukes mens HTML-strengen bygges.
+En inline-hendelse som `oninput` kjøres senere og har ikke tilgang til den lokale
+variabelen. Der bruker vi fortsatt `model.viewState.editContactPage.name`.
+
 ---
 
 # 6. Domenedata
@@ -654,6 +680,37 @@ Dette er greit fordi vi bare oppdaterer midlertidig view state.
 
 Vi skal derimot ikke endre domenedata direkte fra HTML-eventet.
 
+## Input lagrer state; knapper utløser handlinger
+
+Tekstfeltets `oninput` skal bare lagre verdien i state. Det skal ikke kalle
+`updateView()` eller en funksjon som tegner siden på nytt. Når HTML erstattes
+etter hvert tastetrykk, mister feltet fokus. Vi introduserer ikke kode for
+markørposisjon eller gjenoppretting av fokus for å løse dette.
+
+Bruk i stedet en knapp ved siden av feltet. Noen ganger er `updateView()` hele
+handlingen, slik som ved filtrering:
+
+```js
+function updateViewContactsPage() {
+    const ViewState = model.viewState.contactsPage;
+    const contacts = getFilteredContacts();
+    document.getElementById('app').innerHTML = /*HTML*/`
+        <label for="search">Søk</label>
+        <div class="search-row">
+            <input id="search" value="${escapeHtml(ViewState.searchText)}"
+                oninput="model.viewState.contactsPage.searchText = this.value">
+            <button onclick="updateView()">Filtrer</button>
+        </div>
+        ${createContactsHtml(contacts)}
+    `;
+}
+```
+
+Her brukes hjelpefunksjonene fra referanseappen. CSS plasserer felt og knapp
+på samme rad med litt mellomrom. Andre skjemaer har en Lagre- eller Opprett-knapp
+som kaller controlleren. En avkrysning kan oppdatere utkastet via `onchange`
+uten ny tegning; nettleseren viser allerede den endrede avkrysningen.
+
 ---
 
 # 19. viewState som arbeidsutkast
@@ -664,10 +721,11 @@ Når en kontakt skal redigeres:
 function startEditContact(contactId) {
     const contact = findObjectById(model.contacts, contactId);
 
-    model.viewState.editContactPage.contactId = contact.id;
-    model.viewState.editContactPage.name = contact.name;
-    model.viewState.editContactPage.phone = contact.phone;
-    model.viewState.editContactPage.email = contact.email;
+    const ViewState = model.viewState.editContactPage;
+    ViewState.contactId = contact.id;
+    ViewState.name = contact.name;
+    ViewState.phone = contact.phone;
+    ViewState.email = contact.email;
 
     model.app.currentPage = 'editContactPage';
 
@@ -687,11 +745,12 @@ Lag gjerne egne funksjoner:
 
 ```js
 function clearEditContactViewState() {
-    model.viewState.editContactPage.contactId = null;
-    model.viewState.editContactPage.name = '';
-    model.viewState.editContactPage.phone = '';
-    model.viewState.editContactPage.email = '';
-    model.viewState.editContactPage.selectedGroupIds = [];
+    const ViewState = model.viewState.editContactPage;
+    ViewState.contactId = null;
+    ViewState.name = '';
+    ViewState.phone = '';
+    ViewState.email = '';
+    ViewState.selectedGroupIds = [];
 }
 ```
 
@@ -706,11 +765,12 @@ Vi ønsker å unngå unødvendig mutasjon av eksisterende domenedata.
 Når en kontakt lagres, lag et nytt objekt:
 
 ```js
+const ViewState = model.viewState.editContactPage;
 const updatedContact = {
     id: contactId,
-    name: model.viewState.editContactPage.name,
-    phone: model.viewState.editContactPage.phone,
-    email: model.viewState.editContactPage.email,
+    name: ViewState.name,
+    phone: ViewState.phone,
+    email: ViewState.email,
 };
 ```
 
@@ -1354,6 +1414,8 @@ Før du anser løsningen som ferdig, spør:
 - Har jeg én global `model`?
 - Har jeg `model.app` for state som gjelder hele appen?
 - Har jeg `model.viewState` for midlertidig state per side?
+- Bruker jeg det lokale navnet `ViewState` når samme sidestate gjentas i en funksjon?
+- Lagrer tekstinput bare til state, med en egen knapp for handling eller ny tegning?
 - Ligger domenedataene i egne arrays?
 - Har objektene ID-er?
 - Bruker jeg ID-er til å koble objekter?

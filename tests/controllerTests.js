@@ -27,12 +27,13 @@ function resetTestModel() {
 QUnit.module('Modell og controllere', { beforeEach: resetTestModel });
 
 QUnit.test('Opprett kontakt med to medlemskap', function (assert) {
+    const ViewState = model.viewState.editContactPage;
     const oldContacts = model.contacts;
     const oldMemberships = model.memberships;
     startNewContact();
-    model.viewState.editContactPage.name = 'Kari';
-    model.viewState.editContactPage.phone = '99999999';
-    model.viewState.editContactPage.email = 'kari@example.com';
+    ViewState.name = 'Kari';
+    ViewState.phone = '99999999';
+    ViewState.email = 'kari@example.com';
     toggleGroupForEditedContact(1);
     toggleGroupForEditedContact(2);
     saveContact();
@@ -45,22 +46,23 @@ QUnit.test('Opprett kontakt med to medlemskap', function (assert) {
     assert.strictEqual(oldMemberships.length, 3, 'Den gamle relasjonslisten er urørt');
     assert.notStrictEqual(model.contacts, oldContacts);
     assert.notStrictEqual(model.memberships, oldMemberships);
-    assert.strictEqual(model.viewState.editContactPage.contactId, null);
-    assert.strictEqual(model.viewState.editContactPage.name, '');
+    assert.strictEqual(ViewState.contactId, null);
+    assert.strictEqual(ViewState.name, '');
     assert.strictEqual(model.app.currentPage, 'contactsPage');
-    assert.strictEqual(updateViewCalls, 4, 'Handlingene ber om ny tegning');
+    assert.strictEqual(updateViewCalls, 2, 'Oppstart og lagring tegner, gruppevalg endrer bare state');
 });
 
 QUnit.test('Rediger riktig kontakt og erstatt medlemskap', function (assert) {
+    const ViewState = model.viewState.editContactPage;
     const oldContacts = model.contacts;
     const oldMemberships = model.memberships;
     const oldContact = findObjectById(model.contacts, 1);
     const otherContact = findObjectById(model.contacts, 2);
     startEditContact(1);
-    assert.deepEqual(model.viewState.editContactPage.selectedGroupIds, [1, 3]);
-    model.viewState.editContactPage.name = 'Terje Hansen';
-    model.viewState.editContactPage.phone = '55555555';
-    model.viewState.editContactPage.email = 'hansen@example.com';
+    assert.deepEqual(ViewState.selectedGroupIds, [1, 3]);
+    ViewState.name = 'Terje Hansen';
+    ViewState.phone = '55555555';
+    ViewState.email = 'hansen@example.com';
     toggleGroupForEditedContact(1);
     toggleGroupForEditedContact(2);
     assert.strictEqual(oldContact.name, 'Terje', 'Utkastet endrer ikke lagret kontakt');
@@ -81,16 +83,17 @@ QUnit.test('Rediger riktig kontakt og erstatt medlemskap', function (assert) {
 });
 
 QUnit.test('Avbryt forkaster hele utkastet uten å endre domenedata', function (assert) {
+    const ViewState = model.viewState.editContactPage;
     const oldContacts = model.contacts;
     const oldMemberships = model.memberships;
     startEditContact(1);
-    model.viewState.editContactPage.name = 'Forkastes';
+    ViewState.name = 'Forkastes';
     toggleGroupForEditedContact(2);
     cancelEditContact();
     assert.strictEqual(model.contacts, oldContacts);
     assert.strictEqual(model.memberships, oldMemberships);
     assert.strictEqual(model.contacts[0].name, 'Terje');
-    assert.deepEqual(model.viewState.editContactPage, {
+    assert.deepEqual(ViewState, {
         contactId: null, name: '', phone: '', email: '', selectedGroupIds: [],
     });
     assert.strictEqual(model.app.currentPage, 'contactsPage');
@@ -119,28 +122,30 @@ QUnit.test('Sletting av ukjent ID fjerner ikke siste kontakt', function (assert)
 });
 
 QUnit.test('Opprett gruppe med ny ID og nullstill input', function (assert) {
+    const ViewState = model.viewState.groupsPage;
     const oldGroups = model.groups;
-    model.viewState.groupsPage.newGroupName = 'Brettspill';
+    ViewState.newGroupName = 'Brettspill';
     createGroup();
     assert.strictEqual(model.groups.length, 4);
     assert.deepEqual(findObjectById(model.groups, 4), { id: 4, name: 'Brettspill' });
-    assert.strictEqual(model.viewState.groupsPage.newGroupName, '');
+    assert.strictEqual(ViewState.newGroupName, '');
     assert.notStrictEqual(model.groups, oldGroups);
     assert.strictEqual(oldGroups.length, 3);
     assert.strictEqual(updateViewCalls, 1);
 });
 
 QUnit.test('Ny kontakt og navigasjon nullstiller gamle utkast', function (assert) {
+    const ViewState = model.viewState.editContactPage;
     startEditContact(1);
     startNewContact();
     assert.strictEqual(model.app.currentPage, 'editContactPage');
-    assert.deepEqual(model.viewState.editContactPage, {
+    assert.deepEqual(ViewState, {
         contactId: null, name: '', phone: '', email: '', selectedGroupIds: [],
     });
-    model.viewState.editContactPage.name = 'Ulagret';
+    ViewState.name = 'Ulagret';
     goToGroupsPage();
     assert.strictEqual(model.app.currentPage, 'groupsPage');
-    assert.strictEqual(model.viewState.editContactPage.name, '');
+    assert.strictEqual(ViewState.name, '');
     goToContactsPage();
     assert.strictEqual(model.app.currentPage, 'contactsPage');
     assert.strictEqual(model.contacts.length, 3);
@@ -171,16 +176,17 @@ QUnit.test('Finn objekt, beregn neste ID og kopier array', function (assert) {
 });
 
 QUnit.test('Søk og relasjoner beregnes uten å endre domenedata', function (assert) {
+    const ViewState = model.viewState.contactsPage;
     const contacts = model.contacts;
     const groups = model.groups;
     const memberships = model.memberships;
-    model.viewState.contactsPage.searchText = 'PÅL';
+    ViewState.searchText = 'PÅL';
     assert.deepEqual(getFilteredContacts(), [model.contacts[2]]);
-    model.viewState.contactsPage.searchText = '87654321';
+    ViewState.searchText = '87654321';
     assert.deepEqual(getFilteredContacts(), [model.contacts[1]]);
-    model.viewState.contactsPage.searchText = 'terje@example.com';
+    ViewState.searchText = 'terje@example.com';
     assert.deepEqual(getFilteredContacts(), [model.contacts[0]]);
-    model.viewState.contactsPage.searchText = 'Ingen treff';
+    ViewState.searchText = 'Ingen treff';
     assert.deepEqual(getFilteredContacts(), []);
     assert.deepEqual(getGroupsForContact(1), [model.groups[0], model.groups[2]]);
     assert.deepEqual(getContactsForGroup(2), [model.contacts[1]]);

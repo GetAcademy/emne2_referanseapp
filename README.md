@@ -42,9 +42,20 @@ Controller-funksjonene endrer modellen og ber om ny tegning. De leser ingen
 inputfelt fra DOM og bygger ingen HTML. Enkle input-hendelser skriver direkte
 til `model.viewState`; domenedata endres bare gjennom controllerne.
 
+Når sidens state brukes flere ganger i en funksjon, bruker vi det lokale navnet
+`ViewState`, for eksempel `const ViewState = model.viewState.editContactPage`.
+Dette er en referanse til samme objekt. Modellfeltet heter fortsatt `viewState`.
+Inline-hendelser bruker full modellsti, siden de ikke har tilgang til lokale
+variabler fra view-funksjonen.
+
+Tekstinput lagrer bare til state. Søk tegnes på nytt med **Filtrer** ved siden av
+feltet, og skjemaene har **Lagre** eller **Opprett gruppe**. Gruppeavkrysninger
+oppdaterer også bare utkastet; nettleseren viser selve avkrysningen.
+
 Rediger kopierer feltene til et arbeidsutkast. Lagre oppretter et nytt
-kontaktobjekt og nye arrays. Avbryt eller navigasjon til en annen side forkaster
-utkastet. Bare Lagre endrer de lagrede kontaktopplysningene og medlemskapene.
+kontaktobjekt og nye arrays. Avbryt forkaster utkastet. «Kontakter» bytter bare
+side, mens «Grupper» også nullstiller kontaktutkastet. Ny kontakt eller Rediger
+starter alltid et nytt utkast. Bare Lagre endrer lagrede kontaktopplysninger og medlemskap.
 
 Tre ting beregnes ved behov og lagres aldri i modellen:
 
@@ -95,7 +106,8 @@ bevarer gamle arrays og kontaktobjekter, mens sletting endrer arrayene med `spli
 
 ## Prøv selv
 
-Søk etter Pål, tøm søket og opprett en kontakt med to grupper. Rediger navn og
+Skriv Pål og trykk Filtrer. Tøm søket og trykk Filtrer igjen, og opprett deretter
+en kontakt med to grupper. Rediger navn og
 gruppevalg og lagre. Prøv deretter å endre og avbryte: de lagrede opplysningene
 skal være uendret. Opprett en gruppe, legg kontakten i den, og slett kontakten
 fra et søketreff. Kontakten skal også forsvinne fra gruppens medlemsliste.
