@@ -17,14 +17,6 @@ function getNextId(array) {
     return highestId + 1;
 }
 
-function copyArray(array) {
-    const result = [];
-    for (let item of array) {
-        result.push(item);
-    }
-    return result;
-}
-
 // PRINSIPP: Relasjonsoppslag beregnes, ikke lagres i modellen.
 function getGroupsForContact(contactId) {
     const result = [];
@@ -62,20 +54,6 @@ function getFilteredContacts() {
             || contact.email.toLowerCase().includes(searchText)) {
             result.push(contact);
         }
-    }
-    return result;
-}
-
-// Vis brukerens tekst som tekst, også når den inneholder HTML-tegn.
-function escapeHtml(text) {
-    let result = '';
-    for (let character of text) {
-        if (character === '&') result += '&amp;';
-        else if (character === '<') result += '&lt;';
-        else if (character === '>') result += '&gt;';
-        else if (character === '"') result += '&quot;';
-        else if (character === "'") result += '&#39;';
-        else result += character;
     }
     return result;
 }

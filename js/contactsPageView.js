@@ -9,7 +9,7 @@ function updateViewContactsPage() {
         <label for="search">Søk etter navn, telefon eller e-post</label>
         <div class="search-row">
             <input id="search" type="search"
-                value="${escapeHtml(viewState.searchText)}"
+                value="${viewState.searchText}"
                 oninput="model.viewState.contactsPage.searchText = this.value">
             <button onclick="updateView()">Filtrer</button>
         </div>
@@ -35,15 +35,15 @@ function createContactHtml(contact) {
     let groupNames = '';
     for (let group of getGroupsForContact(contact.id)) {
         if (groupNames !== '') groupNames += ', ';
-        groupNames += escapeHtml(group.name);
+        groupNames += group.name;
     }
     if (groupNames === '') groupNames = 'Ingen';
 
     return /*HTML*/`
         <article class="card">
-            <h2>${escapeHtml(contact.name)}</h2>
-            <p>${escapeHtml(contact.phone)}</p>
-            <p>${escapeHtml(contact.email)}</p>
+            <h2>${contact.name}</h2>
+            <p>${contact.phone}</p>
+            <p>${contact.email}</p>
             <p class="groups">Grupper: ${groupNames}</p>
             <div class="actions">
                 <button class="secondary" onclick="startEditContact(${contact.id})">Rediger</button>

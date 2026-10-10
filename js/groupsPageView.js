@@ -6,7 +6,7 @@ function updateViewGroupsPage() {
             <label for="new-group">Navn på ny gruppe</label>
             <div class="actions">
                 <input id="new-group" required
-                    value="${escapeHtml(viewState.newGroupName)}"
+                    value="${viewState.newGroupName}"
                     oninput="model.viewState.groupsPage.newGroupName = this.value">
                 <button type="submit">Opprett gruppe</button>
             </div>
@@ -30,7 +30,7 @@ function createGroupHtml(group) {
     const contacts = getContactsForGroup(group.id);
     return /*HTML*/`
         <section class="card">
-            <h2>${escapeHtml(group.name)}</h2>
+            <h2>${group.name}</h2>
             ${createGroupMembersHtml(contacts)}
         </section>`;
 }
@@ -41,7 +41,7 @@ function createGroupMembersHtml(contacts) {
     }
     let html = '';
     for (let contact of contacts) {
-        html += /*HTML*/`<li>${escapeHtml(contact.name)}</li>`;
+        html += /*HTML*/`<li>${contact.name}</li>`;
     }
     return /*HTML*/`<ul>${html}</ul>`;
 }

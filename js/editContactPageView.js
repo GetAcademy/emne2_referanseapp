@@ -9,13 +9,13 @@ function updateViewEditContactPage() {
         <p class="muted">Lagre beholder endringene. Avbryt forkaster utkastet.</p>
         <form onsubmit="saveContact(); return false;">
             <label for="name">Navn (obligatorisk)</label>
-            <input id="name" required value="${escapeHtml(viewState.name)}"
+            <input id="name" required value="${viewState.name}"
                 oninput="model.viewState.editContactPage.name = this.value">
             <label for="phone">Telefon</label>
-            <input id="phone" type="tel" value="${escapeHtml(viewState.phone)}"
+            <input id="phone" type="tel" value="${viewState.phone}"
                 oninput="model.viewState.editContactPage.phone = this.value">
             <label for="email">E-post</label>
-            <input id="email" type="email" value="${escapeHtml(viewState.email)}"
+            <input id="email" type="email" value="${viewState.email}"
                 oninput="model.viewState.editContactPage.email = this.value">
             <fieldset><legend>Grupper</legend>
                 ${createGroupCheckboxesHtml()}
@@ -45,6 +45,6 @@ function createGroupCheckboxHtml(group) {
         <label class="checkbox">
             <input type="checkbox" ${checked}
                 onchange="toggleGroupForEditedContact(${group.id})">
-            ${escapeHtml(group.name)}
+            ${group.name}
         </label>`;
 }

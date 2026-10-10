@@ -111,7 +111,8 @@ Vi bruker altså tre hovedtyper informasjon:
 - `model.viewState`
 - domenedata direkte på `model`
 
-Vi bruker ikke nødvendigvis et ekstra `data`-objekt rundt domenedataene.
+Domenelistene ligger direkte på `model`. Ikke legg et ekstra `model.data`
+rundt dem i denne referanseappen.
 
 ---
 
@@ -698,7 +699,7 @@ function updateViewContactsPage() {
     document.getElementById('app').innerHTML = /*HTML*/`
         <label for="search">Søk</label>
         <div class="search-row">
-            <input id="search" value="${escapeHtml(viewState.searchText)}"
+            <input id="search" value="${viewState.searchText}"
                 oninput="model.viewState.contactsPage.searchText = this.value">
             <button onclick="updateView()">Filtrer</button>
         </div>
@@ -759,60 +760,78 @@ Bruk denne når det gjør koden tydeligere.
 
 ---
 
-# 21. Lag nye objekter ved domenendringer
+# 21. Mutasjon og objektreferanser
 
-Vi ønsker å unngå unødvendig mutasjon av eksisterende domenedata.
+I Emne 2 er vanlig mutasjon av modellen helt greit. Vi bruker `push()`,
+`splice()` og direkte endring av egenskaper når det gir enkel og tydelig kode.
+Vi lager ikke nye arrays og objekter bare for å unngå mutasjon.
 
-Når en kontakt lagres, lag et nytt objekt:
+Vi må derimot forstå objektreferanser. Et midlertidig viewState-objekt skal
+ikke legges direkte inn i domenedataene.
+
+Feil:
+
+```js
+model.contacts.push(model.viewState.editContactPage);
+```
+
+Da peker kontaktlisten og viewState på samme objekt. Videre endringer eller
+nullstilling av viewState vil også endre den lagrede kontakten.
+Lag derfor et nytt domenobjekt når et nytt arbeidsutkast lagres:
 
 ```js
 const viewState = model.viewState.editContactPage;
-const updatedContact = {
-    id: contactId,
-    name: viewState.name,
-    phone: viewState.phone,
-    email: viewState.email,
+const newContact = {
+    id: getNextId(model.contacts),
+    name: viewState.name.trim(),
+    phone: viewState.phone.trim(),
+    email: viewState.email.trim(),
 };
+model.contacts.push(newContact);
 ```
 
-Ikke bruk:
+Ved redigering kan det eksisterende kontaktobjektet oppdateres direkte:
 
 ```js
-contact.name = ...
-contact.phone = ...
+const contact = findObjectById(model.contacts, viewState.contactId);
+if (contact === null) return;
+contact.name = viewState.name.trim();
+contact.phone = viewState.phone.trim();
+contact.email = viewState.email.trim();
 ```
 
-dersom det enkelt kan unngås.
+Rediger flytter feltverdier fra domenedata til viewState. Lagre flytter dem
+tilbake til domenedata. Avbryt nullstiller utkastet og går tilbake til listen
+uten å endre domenedata.
 
 ---
 
-# 22. Nye arrays ved lagring, `splice` ved sletting
+# 22. Endre lister med `push` og `splice`
 
-Ved oppretting og redigering foretrekker vi å lage nye arrays. Ved sletting
-velger vi `splice`, som endrer den eksisterende arrayen. Dette er et bevisst
-valg fordi det gir kort og lettlest kode. Mutasjon er ikke generelt forbudt.
+Ved oppretting legger vi et nytt domenobjekt inn med `push()`. Ved sletting
+bruker vi `splice()`. Begge endrer den eksisterende arrayen.
 
-På dette tidspunktet i kurset bruker vi løkker.
-
-Eksempel:
+Ved lagring fjerner vi først kontaktens gamle medlemskap, og oppretter så
+ett nytt membership-objekt for hver valgt gruppe:
 
 ```js
-const newContacts = [];
-
-for (let contact of model.contacts) {
-    if (contact.id === contactId) {
-        newContacts.push(updatedContact);
-    } else {
-        newContacts.push(contact);
+for (let i = model.memberships.length - 1; i >= 0; i--) {
+    if (model.memberships[i].contactId === contactId) {
+        model.memberships.splice(i, 1);
     }
 }
 
-model.contacts = newContacts;
+for (let groupId of viewState.selectedGroupIds) {
+    const membership = {
+        contactId: contactId,
+        groupId: groupId,
+    };
+    model.memberships.push(membership);
+}
 ```
 
-Dette er bevisst eksplisitt kode.
-
-Senere kan samme kode skrives kortere med andre JavaScript-teknikker.
+Avledede lister som søketreff beregnes fortsatt ved behov med løkker.
+Dette er et eget prinsipp, ikke en regel om immutable updates.
 
 ## Sletting med `splice`
 
@@ -850,7 +869,8 @@ slette hvert objekt. Da må vi finne plasseringen på nytt for hver sletting;
 gamle indekser kan ha endret seg. For medlemskapene over er baklengs løkke enklest.
 
 `splice` beholder selve arrayen, men endrer innholdet. Andre referanser til den
-samme arrayen ser også slettingen. Testene skal gjenspeile dette valget.
+samme arrayen ser også slettingen. Testene kontrollerer resultatet, uten krav
+om at array-referansen må beholdes eller erstattes.
 
 ---
 
@@ -1253,7 +1273,9 @@ slik at domenelogikken kan testes isolert.
 Eksempler:
 
 - opprette kontakt
+- lagre et nytt domenobjekt, slik at videre endringer i viewState ikke endrer kontakten
 - redigere kontakt
+- avbryte redigering uten å endre kontaktopplysninger eller medlemskap
 - slette kontakt
 - slette alle tilhørende medlemskap, også flere treff ved siden av hverandre
 - forsøke å slette en ukjent ID uten å slette feil objekt
@@ -1263,7 +1285,9 @@ Eksempler:
 - `getNextId`
 - andre rene hjelpefunksjoner
 
-Test først og fremst logikk, ikke HTML.
+Test først og fremst logikk, ikke HTML. Test funksjonaliteten og skillet mellom
+arbeidsutkast og domenedata. Ikke krev nye arrays eller nye domenobjekter ved
+redigering for å demonstrere immutability.
 
 ---
 
@@ -1315,8 +1339,10 @@ KI skal blant annet se etter:
 
 KI skal ikke «modernisere» løsningen ved å introdusere teknikker som dette dokumentet eksplisitt sier at vi ikke bruker.
 
-KI skal heller ikke foreslå å erstatte `splice` bare for å unngå mutasjon.
-Sletting med `splice` er en del av den valgte kodestilen.
+KI skal heller ikke foreslå nye arrays eller nye domenobjekter bare for å
+unngå mutasjon. `push()`, `splice()` og direkte endring av egenskaper er en del
+av den valgte kodestilen. Kontroller derimot at selve viewState-objektet ikke
+lagres i domenedataene.
 
 ---
 
@@ -1432,6 +1458,9 @@ Før du anser løsningen som ferdig, spør:
 - Viser sideviewet sidestrukturen tydelig, med deler satt inn via `${...}`?
 - Ligger løkker og tomtilfeller for HTML-lister i passende hjelpefunksjoner?
 - Bruker jeg `splice` ved sletting og unngår å hoppe over treff når flere slettes?
+- Muterer jeg modellen direkte når det gir enkel kode?
+- Lager jeg et nytt domenobjekt fremfor å legge selve viewState-objektet i domenelisten?
+- Beholder Avbryt domenedataene uendret?
 - Har jeg trukket ut kompliserte løkker i hjelpefunksjoner?
 - Har jeg unngått `map`, `filter`, `find` og `reduce`?
 - Har jeg unngått spread syntax og `Object.assign`?

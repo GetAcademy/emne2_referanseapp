@@ -37,16 +37,12 @@ function startEditContact(contactId) {
 function toggleGroupForEditedContact(groupId) {
     const viewState = model.viewState.editContactPage;
     const selectedIds = viewState.selectedGroupIds;
-    const newSelectedIds = [];
-    for (let id of selectedIds) {
-        if (id !== groupId) {
-            newSelectedIds.push(id);
-        }
+    const index = selectedIds.indexOf(groupId);
+    if (index === -1) {
+        selectedIds.push(groupId);
+    } else {
+        selectedIds.splice(index, 1);
     }
-    if (!selectedIds.includes(groupId)) {
-        newSelectedIds.push(groupId);
-    }
-    viewState.selectedGroupIds = newSelectedIds;
     // Avkrysningen vises allerede av nettleseren. Vi oppdaterer bare utkastet.
 }
 
@@ -56,42 +52,37 @@ function saveContact() {
 
     let contactId = viewState.contactId;
     if (contactId === null) {
-        contactId = getNextId(model.contacts);
+        // Ikke push selve viewState: utkastet og kontaktlisten ville pekt på
+        // samme objekt, så nullstilling av utkastet også ville endret kontakten.
+        const newContact = {
+            id: getNextId(model.contacts),
+            name: viewState.name.trim(),
+            phone: viewState.phone.trim(),
+            email: viewState.email.trim(),
+        };
+        model.contacts.push(newContact);
+        contactId = newContact.id;
+    } else {
+        const contact = findObjectById(model.contacts, contactId);
+        if (contact === null) return;
+        contact.name = viewState.name.trim();
+        contact.phone = viewState.phone.trim();
+        contact.email = viewState.email.trim();
     }
-    const updatedContact = {
-        id: contactId,
-        name: viewState.name.trim(),
-        phone: viewState.phone.trim(),
-        email: viewState.email.trim(),
-    };
 
-    // PRINSIPP: Vi bygger en ny array og et nytt kontaktobjekt.
-    // push brukes på den nye arrayen, så den gamle beholder innholdet sitt.
-    // Senere kan dette skrives kortere med map og spread-syntaks.
-    const newContacts = [];
-    for (let contact of model.contacts) {
-        if (contact.id === contactId) {
-            newContacts.push(updatedContact);
-        } else {
-            newContacts.push(contact);
-        }
-    }
-    if (viewState.contactId === null) {
-        newContacts.push(updatedContact);
-    }
-    model.contacts = newContacts;
-
-    // Behold andre kontakters medlemskap, og erstatt denne kontaktens koblinger.
-    const newMemberships = [];
-    for (let membership of model.memberships) {
-        if (membership.contactId !== contactId) {
-            newMemberships.push(membership);
+    // Gå baklengs så sletting ikke hopper over medlemskap ved siden av hverandre.
+    for (let i = model.memberships.length - 1; i >= 0; i--) {
+        if (model.memberships[i].contactId === contactId) {
+            model.memberships.splice(i, 1);
         }
     }
     for (let groupId of viewState.selectedGroupIds) {
-        newMemberships.push({ contactId: contactId, groupId: groupId });
+        const membership = {
+            contactId: contactId,
+            groupId: groupId,
+        };
+        model.memberships.push(membership);
     }
-    model.memberships = newMemberships;
     clearEditContactViewState();
     model.app.currentPage = 'contactsPage';
     updateView();

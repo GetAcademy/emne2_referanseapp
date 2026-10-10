@@ -9,10 +9,11 @@ function createGroup() {
     const name = viewState.newGroupName.trim();
     if (name === '') return;
 
-    const newGroup = { id: getNextId(model.groups), name: name };
-    const newGroups = copyArray(model.groups);
-    newGroups.push(newGroup);
-    model.groups = newGroups;
+    const newGroup = {
+        id: getNextId(model.groups),
+        name: name,
+    };
+    model.groups.push(newGroup);
     viewState.newGroupName = '';
     updateView();
 }

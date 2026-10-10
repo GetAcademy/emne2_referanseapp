@@ -52,10 +52,12 @@ Tekstinput lagrer bare til state. Søk tegnes på nytt med **Filtrer** ved siden
 feltet, og skjemaene har **Lagre** eller **Opprett gruppe**. Gruppeavkrysninger
 oppdaterer også bare utkastet; nettleseren viser selve avkrysningen.
 
-Rediger kopierer feltene til et arbeidsutkast. Lagre oppretter et nytt
-kontaktobjekt og nye arrays. Avbryt forkaster utkastet. «Kontakter» bytter bare
+Rediger kopierer feltene til et arbeidsutkast. Lagre legger til en ny kontakt
+eller oppdaterer feltene på den eksisterende kontakten, og erstatter kontaktens
+medlemskap. Avbryt forkaster utkastet uten å endre domenedata. «Kontakter» bytter bare
 side, mens «Grupper» også nullstiller kontaktutkastet. Ny kontakt eller Rediger
-starter alltid et nytt utkast. Bare Lagre endrer lagrede kontaktopplysninger og medlemskap.
+starter alltid et nytt utkast. Endringer fra kontaktutkastet overføres til
+domenedata bare ved Lagre.
 
 Tre ting beregnes ved behov og lagres aldri i modellen:
 
@@ -63,17 +65,47 @@ Tre ting beregnes ved behov og lagres aldri i modellen:
 - Gruppene til en kontakt: `getGroupsForContact(contactId)`.
 - Kontaktene i en gruppe: `getContactsForGroup(groupId)`.
 
-Vi bruker bevisst vanlige løkker, eksplisitte objekter og eksplisitte nye arrays.
-`push` fyller de nye arrayene uten å endre de gamle. Senere kan flere av disse
-løsningene skrives kortere med `find`, `filter`, `map` og spread-syntaks.
-Her prioriterer vi konstruksjonene studentene allerede kjenner.
+Vi bruker vanlige løkker og små hjelpefunksjoner fremfor `map()`, `filter()`,
+`find()` og `reduce()`. Vi bruker ikke spread-syntaks eller `Object.assign()`.
+
+I Emne 2 muterer vi normalt modellen direkte når det gir enkel og forståelig
+kode. Vi bruker `push()`, `splice()` og direkte endring av egenskaper. Vi lager
+ikke nye arrays eller erstatter domenobjekter bare for å unngå mutasjon.
+
+Det viktige når vi flytter data fra `viewState` til en domeneliste, er at vi
+lager et nytt domenobjekt. Dette er feil:
+
+```js
+model.contacts.push(model.viewState.editContactPage);
+```
+
+Da peker kontaktlisten og `viewState` på samme objekt. Hvis utkastet senere
+nullstilles eller endres, endres også de lagrede dataene. Riktig løsning:
+
+```js
+const viewState = model.viewState.editContactPage;
+const newContact = {
+    id: getNextId(model.contacts),
+    name: viewState.name.trim(),
+    phone: viewState.phone.trim(),
+    email: viewState.email.trim(),
+};
+model.contacts.push(newContact);
+```
+
+Ved redigering finner vi kontakten med `findObjectById()` og oppdaterer feltene
+direkte. Medlemskap fjernes med en baklengs løkke og `splice()`, før et nytt
+membership-objekt legges til med `push()` for hver valgt gruppe.
+Gruppevalg muterer bare `selectedGroupIds` i utkastet.
+
+Resultatlistene for søk og relasjoner er avledede data. At disse beregnes ved
+behov er et eget prinsipp; det krever ikke immutable updates av domenedata.
 
 Ved sletting bruker vi `splice` på de eksisterende arrayene. Kontakten finnes
 via ID før plasseringen hentes med `indexOf`. Medlemskap gjennomgås baklengs,
 slik at sletting ikke forskyver elementer vi ennå ikke har undersøkt.
 
-`js/common.js` inneholder små hjelpefunksjoner. `escapeHtml` går gjennom tekst
-tegn for tegn, slik at for eksempel et navn med `<` eller `"` vises som tekst.
+`js/common.js` inneholder små hjelpefunksjoner for ID-er, søk og relasjoner.
 
 ## Leserekkefølge
 
@@ -101,8 +133,10 @@ eller app-HTML. En enkel `updateView()`-stub teller tegningskall. Før hver test
 nullstilles modellen eksplisitt, så testene ikke påvirker hverandre.
 
 Testene dekker oppretting, redigering, avbryt, sletting, medlemskap, nye grupper,
-navigasjon, ID-er, søk, kopiering og HTML-tegn. De sjekker også at lagring
-bevarer gamle arrays og kontaktobjekter, mens sletting endrer arrayene med `splice`.
+navigasjon, ID-er og søk. De sjekker at en lagret kontakt er et annet objekt enn
+arbeidsutkastet, og at videre endringer i utkastet ikke endrer kontakten.
+Avbryt skal bevare alle domenedata. Testene krever ikke immutable arrays
+eller immutable domenobjekter.
 
 ## Prøv selv
 
