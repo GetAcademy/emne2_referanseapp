@@ -14,6 +14,32 @@ Målet er:
 
 ---
 
+## KI-agenter er blitt en del av utvikleryrket
+
+I 2026 er bruk av KI-verktøy og coding agents blitt en vanlig del av programvareutvikling.
+
+Stack Overflows utviklerundersøkelse for 2026 viser at omtrent **66 % bruker KI-baserte coding assistants eller coding agents i jobben**, og blant dem som bruker slike verktøy, bruker **73 % dem daglig**. KI brukes særlig til å skrive kode, feilsøke, lage tester, forstå kode og gjøre code review.
+
+Det betyr ikke at alle utviklere arbeider likt eller at KI har overtatt utviklerjobben. Men det betyr at det ikke lenger er nok å tenke på KI som et ekstra verktøy noen utviklere tilfeldigvis bruker.
+
+For mange utviklere er det blitt en del av den normale arbeidsflyten.
+
+Som framtidig utvikler bør du derfor kunne:
+
+- bruke KI til å undersøke og løse tekniske problemer
+- gi en agent god kontekst og tydelige rammer
+- få KI til å arbeide innenfor prosjektets arkitektur og kodestandard
+- lese og vurdere KI-generert kode
+- teste og kvalitetssikre resultatet
+- oppdage når KI tar feil eller beveger seg i feil retning
+- samarbeide med både mennesker og KI uten å miste forståelsen av løsningen
+
+Det er derfor vi trener på dette i Emne 2.
+
+Vi skal ikke lære å la KI gjøre jobben for oss.
+
+Vi skal lære å bruke KI som en utvikler.
+
 # KI kan hjelpe deg å prestere uten at du lærer
 
 Dette er den største faren ved KI i en utdanning.
