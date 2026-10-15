@@ -1,952 +1,662 @@
-# Om å bruke KI i Emne 2
+# Om Emne 2-måten å bygge en applikasjon
 
-I Emne 2 begynner vi for alvor å bruke KI som en del av utviklingsarbeidet.
+Dette dokumentet beskriver hvordan vi bygger frontend-applikasjoner i Emne 2 ved GET Academy.
 
-Det gjør vi ikke fordi det har blitt mindre viktig å lære programmering. Vi gjør det fordi evnen til å bruke KI på en god måte nå også er blitt en del av kompetansen en utvikler trenger.
+Det har to formål:
 
-Målet er derfor ikke:
+1. Det er en kort referanse for studentene.
+2. Det kan gis til en KI-agent sammen med skjermbilder, modell og kode. KI-en skal da følge reglene i dette dokumentet.
 
-> Få KI til å løse oppgaven for deg.
+## Hvorfor vi begrenser verktøykassen
 
-Målet er:
+I Emne 2 lærer vi grunnleggende programmering, tilfeldigvis i JavaScript. Målet er ikke å bruke mest mulig moderne JavaScript.
 
-> Bruk KI til å lære, tenke, kvalitetssikre og arbeide raskere – samtidig som du selv beholder forståelsen og ansvaret for løsningen.
+Vi bruker bevisst en liten verktøykasse som er stor nok til å løse svært mange frontend-oppgaver, men liten nok til at alle på teamet kan forstå koden.
 
----
+Dette er også realistisk trening. I en bedrift vil du ofte møte regler som:
 
-# KI kan hjelpe deg å prestere uten at du lærer
+> Slik bygger vi applikasjoner her.
 
-Dette er den største faren ved KI i en utdanning.
+Da skal du kunne arbeide innenfor prosjektets teknologivalg og kodestil i stedet for å introdusere nye teknikker fordi du tilfeldigvis kjenner dem.
 
-I en jobb er det viktig å levere verdi.
-
-I en utdanning er hovedmålet at **du utvikler kompetanse**.
-
-KI gjør det mulig å lage en fungerende applikasjon, besvare en oppgave eller produsere kode som ser imponerende ut uten at du nødvendigvis har lært det oppgaven skulle trene.
-
-Du kan altså bli bedre til å **prestere** uten å bli tilsvarende bedre til å **forstå**.
-
-Det er å lure seg selv.
-
-En fungerende løsning er derfor ikke i seg selv et bevis på kompetanse.
-
-Kompetanse handler også om at du:
-
-- forstår hvorfor løsningen virker
-- kan forklare viktige valg
-- kan lese koden
-- kan oppdage feil
-- kan feilsøke
-- kan diskutere løsningen med andre
-- kan bruke kunnskapen i en ny situasjon
-
-Noen faresignaler er at du beholder kode du ikke forstår, ber KI gjøre hele læringsaktiviteten før du selv har satt deg inn i problemet, eller bruker KI hver gang du møter motstand.
-
-Vi ønsker derfor ikke **minst mulig KI**.
-
-Vi ønsker **riktig KI-bruk**.
-
-Vi åpner for mer bruk av KI i Emne 2 fordi KI-kompetanse nå selv er noe dere må lære. Samtidig må vi passe på at KI ikke hopper over de læringsaktivitetene dere trenger for å utvikle egen kompetanse.
+Det samme gjelder KI: **KI skal tilpasse seg vår verktøykasse. Vi skal ikke tilpasse prosjektet til alt KI kan.**
 
 ---
 
-# Snakk fag – med mennesker og med KI
+# Fra behov til kode
 
-Dette er et viktig prinsipp ved GET Academy.
+Arbeidsprosessen er:
 
-Programmering er ikke bare det å klare å få en datamaskin til å gjøre noe.
+**kundebehov → tekstlig oppsummering → skjermbilder → modell → implementasjon**
 
-En utvikler må også kunne:
+Før vi implementerer bør vi vite:
 
-- beskrive et problem
-- forklare hvordan en løsning fungerer
-- stille faglige spørsmål
-- forstå hva andre mener
-- begrunne egne valg
-- oppdage misforståelser
-- diskutere alternativer
-- komme fram til en felles forståelse med andre
+- hvilke sider applikasjonen trenger
+- hva brukeren ser på hver side
+- hva brukeren kan gjøre
+- hvilke data applikasjonen må huske
 
-Derfor er teamarbeidet en viktig del av opplæringen.
-
-## Språk er også et verktøy for å tenke
-
-Når du må forklare et problem til en annen person, blir du tvunget til å finne ordene og begrepene som beskriver det.
-
-Du kan for eksempel måtte si:
-
-> Dette bør ligge i `viewState`, fordi det bare er et midlertidig arbeidsutkast.
-
-eller:
-
-> Vi trenger ikke lagre denne verdien. Den kan beregnes fra de dataene vi allerede har.
-
-Slike setninger inneholder mye faglig forståelse.
-
-Begreper som:
-
-- state
-- viewState
-- domenedata
-- referanse
-- relasjon
-- avledet verdi
-- controller
-- view
-
-gjør det mulig å tenke og kommunisere om kompliserte sammenhenger på en presis måte.
-
-Når vi lærer et faglig språk, får vi derfor ikke bare flere ord. Vi får også nye verktøy for å analysere problemer.
-
-Når du forsøker å forklare noe til en annen på teamet, kan du dessuten oppdage at du ikke forstår det så godt som du trodde.
-
-Kanskje den andre ikke forstår forklaringen.
-
-Da må du prøve igjen.
-
-Du må kanskje finne et bedre eksempel, undersøke hva et begrep egentlig betyr eller oppdage et hull i egen forståelse.
-
-Det er læring.
-
-## Derfor er mennesker fortsatt viktige
-
-Mange bedrifter legger stor vekt på utviklere som kan samarbeide og kommunisere faglig.
-
-Du trenger ikke være den raskeste eller mest avanserte programmereren for å være verdifull i et team.
-
-Programmeringsferdighetene kan utvikles videre over tid.
-
-Men en utvikler som ikke klarer å kommunisere, forstå andre og samarbeide om retningen, kan være vanskelig å bruke i et utviklingsteam.
-
-Det hjelper lite å løpe veldig fort hvis man løper i feil retning.
-
-Ofte er det viktigere å klare å finne riktig retning sammen.
+Skjermbildene og brukerhandlingene brukes som grunnlag for modellen.
 
 ---
 
-# KI er også en arena for faglig språk
+# Modellen
 
-Når du arbeider med KI, må du også bruke språk.
-
-Du må beskrive:
-
-- hva problemet er
-- hva du ønsker
-- hva som allerede finnes
-- hva som er viktig
-- hvilke regler som gjelder
-- hva KI ikke skal gjøre
-
-Resultatet du får tilbake blir dermed også en slags test av kommunikasjonen din.
-
-Vi kan tenke:
-
-**Det jeg mente → det jeg klarte å beskrive → det KI forsto → det KI laget**
-
-Hvis resultatet ikke ble som du ønsket, må du undersøke hvorfor.
-
-Var bestillingen uklar?
-
-Manglet KI viktig informasjon?
-
-Brukte du feil fagbegreper?
-
-Gjorde KI en feil selv om bestillingen var god?
-
-Et dårlig resultat betyr altså ikke automatisk at promptet ditt var dårlig. KI gjør feil.
-
-Men du må kunne undersøke forskjellen.
-
-Kvalitetssikring har derfor minst tre formål:
-
-**Kvalitet:** Er løsningen god nok?
-
-**Ansvar:** Du er ansvarlig for det du velger å levere videre.
-
-**Læring:** Hva forteller resultatet om din egen forståelse og hvor godt du klarte å beskrive problemet?
-
----
-
-# Bruk både teamet og KI som sparringspartnere
-
-Det finnes ikke én fast regel om at du alltid skal spørre KI før mennesker eller mennesker før KI.
-
-Bruk begge.
-
-Snakk med teamet.
-
-Forklar hvordan du tenker.
-
-Hjelp andre når de står fast.
-
-Bruk KI til å utfordre forståelsen deres.
-
-Be KI finne svakheter.
-
-Og bruk lærer når dere trenger erfaring, vurdering eller hjelp med noe dere fortsatt ikke forstår.
-
-Når dere ber om faglig tilbakemelding på noe dere har arbeidet med en stund, for eksempel en modell eller en obligatorisk oppgave, forventer vi at dere allerede har forsøkt å kvalitetssikre arbeidet både gjennom teamet og med relevante verktøy.
-
----
-
-# Typiske Emne 2-problemer der KI kan være nyttig
-
-| Problemstilling | Viktig diskusjon i teamet | Hvordan KI kan hjelpe |
-|---|---|---|
-| Hva mente egentlig kunden? | Har vi forstått behovet likt? Har vi gjort egne antakelser? | Lese oppsummeringen kritisk og finne uklare punkter og spørsmål. |
-| Mangler det skjermbilder? | Har vi forstått hele brukerflyten? | Sammenligne tekst og skjermbilder og finne handlinger som ikke er dekket. |
-| Hva trenger modellen? | Hva må systemet huske for å kunne vise sidene og håndtere handlingene? | Sammenligne skjermbilder og modell og finne manglende state. |
-| Er dette `viewState` eller domenedata? | Er dette noe brukeren holder på med nå, eller noe systemet faktisk skal huske? | Analysere konkrete felter og begrunne plasseringen. |
-| Lagrer vi samme informasjon flere steder? | Hvor ligger egentlig sannheten? | Finne dupliserte eller avledede verdier. |
-| Skal noe lagres eller beregnes? | Kan verdien alltid finnes fra andre data? | Oppdage f.eks. `cartTotal`, `filteredContacts` eller `isAvailable` som kan beregnes. |
-| Hvordan kobles objektene sammen? | Hvilke forskjellige entiteter finnes i domenet? | Foreslå ID-relasjoner som `contacts + groups + memberships`. |
-| Hva skal knappen gjøre? | Hvilken endring i modellen representerer handlingen? | Foreslå controller-funksjon og hvilke deler av modellen den må lese og endre. |
-| Hvorfor endret data seg «av seg selv»? | Har vi forstått objektreferanser? | Oppdage at et viewState-objekt har blitt brukt direkte som domenobjekt. |
-| Hvordan finner vi riktig objekt? | Hvilken ID har vi? | Lage en liten hjelpefunksjon med en vanlig løkke. |
-| Hvordan deler vi koden i filer? | Hva tilhører siden? Hva er view og controller? | Foreslå enkel filstruktur innenfor Emne 2-reglene. |
-| Hva bør testes? | Hva er den viktige oppførselen i controlleren? | Lage relevante QUnit-tester. |
-| KI har skrevet kode vi ikke forstår | Hvilke deler kan teamet faktisk forklare? | Forklare koden og skrive den om innenfor Emne 2-verktøykassen. |
-
-Et godt prinsipp er:
-
-> **KI er ofte svært god til å finne spørsmål. Det betyr ikke at KI har myndighet til å bestemme svaret.**
-
-Hvis spørsmålet er hva kunden egentlig ønsker, må kunden avklare det.
-
-Hvis spørsmålet er hvilket arkitekturprinsipp vi bruker i Emne 2, må løsningen følge prosjektets regler.
-
----
-
-# Chat og coding agent
-
-Vi kan bruke KI på litt forskjellige måter.
-
-## Chat
-
-Chat passer spesielt godt når vi vil:
-
-- diskutere
-- analysere
-- forstå
-- forklare
-- sammenligne alternativer
-- få kritikk
-- formulere et bedre oppdrag
-
-En nyttig arbeidsmåte er:
-
-1. Last ned repositoriet fra GitHub som ZIP.
-2. Last det opp i en KI-chat.
-3. Be KI analysere prosjektet.
-4. Diskuter problemet.
-5. Be til slutt chatten formulere et presist oppdrag til coding-agenten.
-
-Da bruker vi chatten til å finne ut **hva som bør gjøres** før agenten begynner å endre kode.
-
-## Coding agent
-
-En coding agent kan arbeide direkte med kodebasen.
-
-Den kan blant annet:
-
-- lese mange filer
-- opprette filer
-- endre kode
-- søke gjennom prosjektet
-- gjennomføre endringer på tvers av filer
-- kjøre tester
-- rette feil
-
-Agenten er særlig nyttig når vi allerede vet omtrent hva vi ønsker å få gjort.
-
-En enkel tommelfingerregel kan derfor være:
-
-> **Chat er ofte nyttig når vi skal forstå og bestemme. Agent er ofte nyttig når vi skal gjennomføre.**
-
-Dette er ikke en absolutt grense. Verktøyene overlapper.
-
----
-
-# Hva bør agenten få vite?
-
-Jo bedre kontekst, desto bedre mulighet har agenten til å lykkes.
-
-I Emne 2 kan en god pakke bestå av:
-
-1. kundebestillingen
-2. skjermbildene
-3. modellen
-4. dokumentet «Om Emne 2-måten å bygge en applikasjon»
-
-De tre første forklarer:
-
-> **Hva skal vi bygge?**
-
-Emne 2-dokumentet forklarer:
-
-> **Hvordan skal vi bygge det?**
-
-Dette skillet er viktig.
-
----
-
-# Demo-case
-
-Til denne økten bruker vi et lite system for utstyrsutlån.
-
-I repositoriet finnes:
-
-```text
-AI/
-└── Demo_Case/
-    ├── Bestilling.md
-    ├── model.js
-    └── skjermbilder.png
-```
-
-Caset er allerede kommet til det punktet studentene selv er på i casearbeidet:
-
-- kunden er forstått
-- løsningen er beskrevet
-- skjermbildene er laget
-- modellen er ferdig
-
-Nå skal vi implementere view- og controller-funksjonene.
-
----
-
-# Demo 1 – vi er litt naive
-
-Først gir vi agenten:
-
-- bestillingen
-- skjermbildene
-- modellen
-
-Vi forteller at den skal bruke JavaScript, men sier ingenting om hvordan vi programmerer i Emne 2.
-
-## Prompt
-
-> Les den vedlagte beskrivelsen, skjermbildene og JavaScript-modellen.
->
-> Lag en komplett fungerende frontend-applikasjon basert på dette.
->
-> Bruk HTML, CSS og JavaScript.
->
-> Implementer skjermbildene og funksjonaliteten som fremgår av materialet.
->
-> Bruk modellen som utgangspunkt for data og state.
->
-> Kontroller at applikasjonen fungerer når du er ferdig.
-
-Dette er egentlig en ganske rimelig bestilling.
-
-Så ser vi hva som skjer.
-
----
-
-# Første spørsmål: Virker appen?
-
-Vi kjører løsningen.
-
-Det kan hende den ser veldig bra ut.
-
-Kanskje:
-
-- søket fungerer
-- utlån kan registreres
-- ting kan leveres tilbake
-- historikken vises
-- designet ser pent ut
-
-Da er det fristende å si:
-
-> Ferdig!
-
-Men nå kommer den viktige delen.
-
----
-
-# Andre spørsmål: Hva har KI egentlig laget?
-
-Vi åpner koden.
-
-Har agenten brukt ting som:
-
-- modules
-- `import` / `export`
-- Node
-- npm
-- Vite
-- arrow functions
-- `map`
-- `filter`
-- `find`
-- `reduce`
-- `forEach`
-- destructuring
-- spread
-- `Object.assign`
-- `querySelector`
-- `addEventListener`
-- classes
-- annen arkitektur vi ikke bruker?
-
-Alt dette kan være gyldig JavaScript.
-
-Men det betyr ikke at det er riktig kode for dette prosjektet.
-
-> **En løsning kan fungere og samtidig være feil løsning for kodebasen.**
-
----
-
-# Hvorfor er dette viktig?
-
-I Emne 2 har vi en liten, felles verktøykasse.
-
-Alle i teamet skal kunne forstå koden.
-
-Dette er også trening i noe dere vil møte i arbeidslivet.
-
-En bedrift kan ha bestemte valg for:
-
-- arkitektur
-- biblioteker
-- programmeringsstil
-- testing
-- språkversjon
-- filstruktur
-
-Du skal kunne følge disse valgene selv om du personlig kjenner andre måter å løse problemet på.
-
-Det samme gjelder KI.
-
----
-
-# Demo 2 – vi gir KI kodestandarden
-
-Nå kjører vi samme oppgave på nytt.
-
-Denne gangen får agenten også:
-
-```text
-Om Emne 2-måten å bygge en applikasjon.md
-```
-
-## Prompt
-
-> Les alle vedlagte filer før du begynner.
->
-> Implementer applikasjonen fra Demo_Case basert på bestillingen, skjermbildene og den ferdige modellen.
->
-> Dokumentet «Om Emne 2-måten å bygge en applikasjon» beskriver kodestandarden for prosjektet. Følg den strengt.
->
-> Ikke introduser konstruksjoner, verktøy eller arkitektur som dokumentet sier at vi ikke bruker.
->
-> Behold den globale modellen som utgangspunkt.
->
-> Lag nødvendige view-funksjoner og controller-funksjoner og implementer funksjonaliteten som fremgår av materialet.
->
-> Lag også relevante QUnit-tester av controller-logikken.
->
-> Applikasjonen skal være enkel nok til at studenter på dette nivået kan lese og forklare koden.
->
-> Når du er ferdig, gå gjennom løsningen én gang til og kontroller den mot reglene i Emne 2-dokumentet.
-
-Deretter sammenligner vi resultatet med demo 1.
-
----
-
-# Hva lærte demoene oss?
-
-Det er ikke nødvendigvis KI-modellen som har blitt smartere mellom demo 1 og demo 2.
-
-Det er **bestillingen og konteksten** som har blitt bedre.
-
-Dette er en viktig KI-ferdighet:
-
-> Å kunne styre agenten innenfor rammene til prosjektet.
-
----
-
-# Referanseappen
-
-Repositoriet inneholder også en komplett referanseapp.
-
-Den viser hvordan vi bygger på Emne 2-måten.
-
-Dere kan:
-
-- lese den
-- sammenligne egen kode med den
-- be KI forklare den
-- bruke den som eksempel på ønsket kodestil
-- sammenligne eget prosjekt mot den
-
-Dere kan også gi referanseappen til en agent og si:
-
-> Les denne appen først og følg samme arkitektur og kodestil. Ikke kopier domenet eller funksjonaliteten.
-
-Men en referanseapp erstatter ikke forståelse.
-
-Prøv å forstå **hvorfor** den er strukturert som den er.
-
----
-
-# KI som reviewer av modellen
-
-KI trenger ikke vente til vi begynner å programmere.
-
-Når dere har:
-
-- bestilling
-- skjermbilder
-- modell
-
-kan dere få en ekstra vurdering.
-
-For eksempel:
-
-> Les bestillingen, skjermbildene, modellen og «Om Emne 2-måten å bygge en applikasjon».
->
-> Ikke endre modellen.
->
-> Vurder den kritisk.
->
-> Se spesielt etter manglende viewState, data som ligger på feil sted, dobbeltlagring, avledede verdier som er lagret, unødvendig nesting, relasjoner som bør bruke ID-er og data som mangler for å kunne implementere skjermbildene.
->
-> Forklar problemene før du foreslår endringer.
-
-Teamet vurderer deretter tilbakemeldingen.
-
-KI er reviewer, ikke dommer.
-
----
-
-# Analyse først – endring etterpå
-
-Dette er en svært nyttig agentteknikk.
-
-I stedet for:
-
-> Fiks dette.
-
-si:
-
-> Undersøk problemet. Ikke endre kode ennå. Forklar hva du mener er galt og foreslå en plan.
-
-Da beholder vi kontrollen.
-
-Etterpå kan vi si:
-
-> Gjennomfør planen.
-
-Dette er spesielt nyttig ved:
-
-- modellendringer
-- større refaktorering
-- feil som er vanskelige å forstå
-- endringer som påvirker flere filer
-
----
-
-# Implementer i små steg
-
-At agenten **kan** skrive hele appen på én gang betyr ikke at det alltid er lurt.
-
-En trygg arbeidsflyt er:
-
-1. Ha bestilling, skjermbilder og modell klare.
-2. Commit modellen.
-3. La KI evaluere modellen.
-4. Avklar eventuelle spørsmål i teamet.
-5. Be agenten foreslå view- og controller-funksjoner.
-6. Implementer én side eller brukerflyt.
-7. Kjør appen.
-8. Les koden.
-9. Test funksjonaliteten.
-10. Commit.
-11. Gå videre.
-
-Små steg gjør det lettere å oppdage når agenten beveger seg i feil retning.
-
----
-
-# Les koden og diffen
-
-Ikke vurder bare resultatet i nettleseren.
-
-Se også på:
-
-- hvilke filer agenten opprettet
-- hvilke filer den endret
-- hvilken kode den la til
-- hvilken kode den slettet
-
-Git passer derfor svært godt sammen med coding agents.
-
-Et godt mønster er:
-
-> **liten fungerende endring → forstå → test → commit**
-
----
-
-# KI og QUnit
-
-KI er godt egnet til å hjelpe med unit-tester.
-
-I Emne 2 bruker vi QUnit.
-
-Vi tester særlig:
-
-- controller-funksjoner
-- hjelpefunksjoner
-- hvordan modellen endres
-
-Controllerne våre kaller ofte:
+Vi har én global modell:
 
 ```js
-updateView();
+const model = {
+    app: {
+        currentPage: 'contactsPage',
+    },
+
+    viewState: {
+        contactsPage: {
+            searchText: '',
+        },
+
+        editContactPage: {
+            contactId: null,
+            name: '',
+            phone: '',
+            email: '',
+        },
+    },
+
+    contacts: [],
+    groups: [],
+    memberships: [],
+};
 ```
 
-I unit-testen trenger vi ikke tegne HTML.
+## `model.app`
 
-Testmiljøet kan derfor ha:
+Her ligger state som gjelder hele applikasjonen, for eksempel:
+
+```js
+model.app.currentPage
+```
+
+## `model.viewState`
+
+Her ligger det brukeren holder på med akkurat nå.
+
+Et skjema for å redigere en kontakt kan for eksempel ha:
+
+```js
+model.viewState.editContactPage
+```
+
+View state er ofte et **arbeidsutkast**. Brukeren kan endre dette uten at de lagrede dataene endres.
+
+## Domenedata
+
+De faktiske dataene ligger i egne arrays direkte på modellen:
+
+```js
+model.contacts
+model.groups
+model.memberships
+```
+
+Som hovedregel har vi én liste per type ting.
+
+---
+
+# Relasjoner mellom data
+
+Objektene får ID-er:
+
+```js
+contacts: [
+    { id: 1, name: 'Terje' },
+],
+
+groups: [
+    { id: 1, name: 'Sykling' },
+],
+
+memberships: [
+    { contactId: 1, groupId: 1 },
+],
+```
+
+Vi bruker ID-er til å koble objekter sammen.
+
+Vi legger normalt ikke komplette gruppeobjekter inni kontaktobjektene.
+
+Bruk også ID når controller-funksjoner skal identifisere et objekt:
+
+```js
+deleteContact(17);
+editContact(17);
+```
+
+Ikke bruk plasseringen i arrayen som identiteten til objektet.
+
+---
+
+# Ikke lagre det som kan beregnes
+
+Modellen skal først og fremst inneholde det applikasjonen må huske.
+
+Hvis vi har:
+
+```js
+model.contacts
+```
+
+og:
+
+```js
+model.viewState.contactsPage.searchText
+```
+
+trenger vi vanligvis ikke også:
+
+```js
+model.filteredContacts
+```
+
+Den filtrerte listen kan beregnes når den trengs.
+
+Det samme gjelder for eksempel:
+
+- totalpris
+- antall elementer
+- filtrerte lister
+- gruppene til en kontakt
+- kontaktene i en gruppe
+
+Prøv å ha **én sannhet** fremfor flere kopier av den samme informasjonen.
+
+---
+
+# Objektreferanser og view state
+
+I Emne 2 bruker vi vanlig, muterende imperativ programmering.
+
+Dette er helt greit:
+
+```js
+model.contacts.push(newContact);
+```
+
+```js
+model.contacts.splice(index, 1);
+```
+
+```js
+contact.name = 'Nytt navn';
+```
+
+Vi har **ikke** en regel om at modellen skal være immutable.
+
+Men vi må forstå objektreferanser.
+
+Dette er feil:
+
+```js
+model.contacts.push(model.viewState.editContactPage);
+```
+
+Da peker domenedataene og view state på det samme objektet.
+
+Lag i stedet et nytt objekt når et arbeidsutkast skal bli et nytt domenobjekt:
+
+```js
+const newContact = {
+    id: getNextId(model.contacts),
+    name: model.viewState.editContactPage.name,
+    phone: model.viewState.editContactPage.phone,
+    email: model.viewState.editContactPage.email,
+};
+
+model.contacts.push(newContact);
+```
+
+Ved redigering av et eksisterende objekt er vanlig mutasjon helt greit:
+
+```js
+const contact = findObjectById(model.contacts, contactId);
+
+contact.name = model.viewState.editContactPage.name;
+contact.phone = model.viewState.editContactPage.phone;
+contact.email = model.viewState.editContactPage.email;
+```
+
+---
+
+# View og controller
+
+Hovedideen er:
+
+```text
+BRUKERHANDLING
+      ↓
+CONTROLLER
+      ↓
+MODELLEN ENDRES
+      ↓
+updateView()
+      ↓
+NY HTML
+```
+
+## View
+
+View leser modellen og lager HTML.
+
+Vi har én hovedfunksjon:
 
 ```js
 function updateView() {
+    if (model.app.currentPage === 'contactsPage') {
+        updateViewContactsPage();
+    }
+    else if (model.app.currentPage === 'editContactPage') {
+        updateViewEditContactPage();
+    }
 }
 ```
 
-Hver test bør sette modellen i en kjent starttilstand.
+En side kan for eksempel tegnes slik:
 
-Deretter:
+```js
+function updateViewContactsPage() {
+    const html = /*HTML*/`
+        <h1>Kontakter</h1>
+        ...
+    `;
 
-1. kjør controller-funksjonen
-2. undersøk modellen
-3. kontroller forventet resultat
+    document.getElementById('app').innerHTML = html;
+}
+```
 
-## Eksempel på prompt
+Når HTML gjentas, kan vi trekke den ut i en liten funksjon:
 
-> Lag QUnit-tester for controller-funksjonene i denne filen.
->
-> Følg testmønsteret som brukes i referanseappen.
->
-> Test logikken gjennom endringer i `model`, ikke gjennom DOM.
->
-> Hver test skal starte med en kjent modelltilstand.
->
-> Bruk en tom `updateView()` slik at controllerne kan testes uten vanlig view.
->
-> Følg JavaScript-verktøykassen i «Om Emne 2-måten å bygge en applikasjon».
+```js
+function createContactHtml(contact) {
+    return /*HTML*/`
+        <div>
+            <h3>${contact.name}</h3>
+            <button onclick="editContact(${contact.id})">
+                Rediger
+            </button>
+        </div>
+    `;
+}
+```
 
-Men testene må også leses og forstås.
+En komponent trenger altså ikke være noe mer avansert enn en funksjon som returnerer HTML.
 
-KI kan skrive en dårlig test like lett som dårlig produksjonskode.
+## Controller
 
----
+Controller-funksjoner håndterer brukerhandlinger:
 
-# KI til feilsøking
+```js
+function deleteContact(contactId) {
+    ...
+    updateView();
+}
+```
 
-Gi KI mest mulig presis informasjon.
+Controlleren endrer modellen.
 
-Ikke bare:
+Viewet lager HTML.
 
-> Det virker ikke.
-
-Prøv heller:
-
-> Når jeg klikker «Registrer utlån», opprettes det ikke noe nytt lån.
->
-> Jeg forventer at et nytt objekt pushes til `model.loans`, at siden endres og at `updateView()` kalles.
->
-> Undersøk koden og forklar først hva som er feil. Ikke gjør noen endringer ennå.
-
-Da bruker vi samtidig feilsøkingen som læring.
-
----
-
-# Be KI forklare kode
-
-Hvis agenten har laget kode du ikke forstår:
-
-> Forklar denne funksjonen steg for steg med utgangspunkt i JavaScript-nivået i Emne 2.
-
-Hvis løsningen fortsatt er vanskelig å forstå:
-
-> Skriv den om med bare konstruksjoner fra Emne 2-verktøykassen.
-
-Hvis teamet fortsatt ikke forstår koden, bør den ikke uten videre bli stående.
+Controlleren skal ikke bygge HTML.
 
 ---
 
-# Be KI kritisere sitt eget arbeid
+# Hjelpefunksjoner
 
-En nyttig avslutning på en agentøkt er:
+Hvis en løkke eller annen operasjon brukes flere steder eller gjør koden vanskelig å lese, trekker vi den ut i en funksjon.
 
-> Ikke gjør noen endringer.
->
-> Gå gjennom løsningen kritisk.
->
-> Sammenlign den med:
->
-> 1. bestillingen
-> 2. skjermbildene
-> 3. modellen
-> 4. «Om Emne 2-måten å bygge en applikasjon»
->
-> List konkrete feil, avvik og mangler.
+Eksempel:
 
-Det kan også være nyttig å la en annen KI-chat gjøre review av det agenten har skrevet.
+```js
+function findObjectById(array, id) {
+    for (const object of array) {
+        if (object.id === id) {
+            return object;
+        }
+    }
 
----
+    return null;
+}
+```
 
-# KI og teamarbeid
-
-Ikke la agentarbeidet bli noe én person på teamet gjør alene hele tiden.
-
-Bytt gjerne på.
-
-En person kan:
-
-- gjøre en agentøkt
-- lese endringene
-- kjøre løsningen
-- committe og pushe
-
-Deretter kan en annen fortsette.
-
-Da får flere erfaring med:
-
-- prompting
-- review
-- feilsøking
-- vurdering av KI-generert kode
-
-Og teamet beholder felles eierskap til løsningen.
+Det er helt greit at løsningen blir noen linjer lengre når resultatet er kode alle på teamet forstår.
 
 ---
 
-# Aktuelle verktøy
+# Verktøykassen vi bruker
 
-Vi demonstrerer hovedsakelig **ChatGPT Codex**, fordi læreren kjenner dette verktøyet godt.
+Dette er hovedverktøykassen i Emne 2.
 
-Det finnes flere alternativer.
+## Grunnleggende JavaScript
 
-## VS Code + GitHub Copilot
+Vi bruker:
 
-Dere bruker allerede Visual Studio Code.
+- `const` og `let`
+- tall, tekst, boolean, `null` og `undefined`
+- objekter
+- arrays
+- vanlige funksjoner med `function`
+- parametre og returverdier
+- `if`, `else if` og `else`
+- ternary operator `condition ? value1 : value2`
+- logiske operatorer `&&`, `||` og `!`
+- sammenligningsoperatorer
+- aritmetiske operatorer
+- tilordning og operatorer som `++`, `+=` osv.
 
-GitHub Copilot kan brukes direkte i VS Code og tilbyr både chat, kodeforslag og agentfunksjonalitet.
+## Løkker
 
-Det finnes også et begrenset gratisnivå, **Copilot Free**.
+Vi bruker vanlige løkker:
 
-Dette er derfor et naturlig verktøy å prøve.
+```js
+for (let i = 0; i < array.length; i++) {
+}
+```
 
-## Cursor
+og:
 
-Cursor er en kodeeditor med KI og coding agents tett integrert.
+```js
+for (const item of array) {
+}
+```
 
-Det finnes et gratisnivå med begrenset bruk.
+`while` er også grunnleggende programmering og kan brukes når det passer.
 
-## Google Antigravity
+## Arrays
 
-Google tilbyr også et agentbasert utviklingsmiljø.
+Vi kan blant annet bruke:
 
-Det finnes gratis bruk med begrensninger.
+```js
+array.length
+array.push(...)
+array.splice(...)
+array.includes(...)
+array.indexOf(...)
+```
 
-## Claude Code
+For søking, filtrering, transformasjon og opptelling bruker vi normalt løkker og eventuelt egne hjelpefunksjoner.
 
-Claude Code er en mye brukt coding agent blant profesjonelle utviklere.
+## Innebygde funksjoner
 
-Den krever normalt betalt Claude-tilgang.
+Vanlige innebygde funksjoner og metoder for tekst, tall og dato er en del av verktøykassen.
 
-## ChatGPT Codex
+Eksempler:
 
-Codex kan arbeide med hele kodeprosjekter og gjøre endringer på tvers av filer.
+```js
+text.trim()
+text.toLowerCase()
+text.toUpperCase()
+text.includes(...)
+text.indexOf(...)
+text.startsWith(...)
+text.endsWith(...)
+text.substring(...)
+text.slice(...)
+text.split(...)
+text.replace(...)
+```
 
-Tilgjengelighet og gratisgrenser avhenger av gjeldende ChatGPT-planer.
+```js
+Number(...)
+parseInt(...)
+number.toFixed(...)
+Math.round(...)
+Math.floor(...)
+Math.ceil(...)
+Math.min(...)
+Math.max(...)
+Math.random()
+```
+
+```js
+new Date()
+```
+
+Vi kan bruke andre grunnleggende innebygde tekst-, tall- og datofunksjoner studentene har arbeidet med.
+
+## DOM og HTML
+
+Vi bruker først og fremst:
+
+```js
+document.getElementById(...)
+```
+
+og setter for eksempel:
+
+```js
+document.getElementById('app').innerHTML = html;
+```
+
+Vi bygger HTML med template strings:
+
+```js
+const html = /*HTML*/`
+    <div class="${isSelected ? 'selected' : ''}">
+        ${text}
+    </div>
+`;
+```
+
+Vi bruker enkle inline-events:
+
+```html
+<button onclick="saveContact()">Lagre</button>
+```
+
+```html
+<input oninput="model.viewState.editPage.name = this.value">
+```
+
+```html
+<select onchange="...">
+```
+
+CSS-klasser og annen HTML kan gjerne bestemmes med `${...}` inne i template strings.
+
+## Testing
+
+Vi bruker **QUnit**.
+
+Vi tester særlig funksjoner og controller-logikk ved å kontrollere hvordan modellen endres.
 
 ---
 
-# Gratis bruk
+# Dette bruker vi ikke i Emne 2
 
-Gratisnivåene og grensene for KI-verktøy endrer seg ofte.
+KI skal ikke introdusere følgende teknikker i løsningen.
 
-Derfor bør dere sjekke gjeldende betingelser når dere tar dem i bruk.
+## Ingen JavaScript-moduler
 
-For dette kurset er det helt fint å prøve flere verktøy.
+Ikke bruk:
 
-Det gir:
-
-- erfaring med forskjellige agenter
-- mulighet til å sammenligne resultatene
-- tilgang til flere begrensede gratiskvoter
-
-Men poenget er ikke å bruke mest mulig KI.
-
-Poenget er å lære arbeidsformen.
-
----
-
-# Ikke bruk mye tid på CSS
-
-Emne 2 handler først og fremst om:
-
-- funksjonalitet
-- modell
-- dataflyt
-- view
-- controller
-- samarbeid
-- testing
-
-Ikke bruk store deler av prosjektet på visuell finpuss.
-
-Enkel semantisk HTML og litt CSS er normalt nok.
-
-KI kan gjerne hjelpe med en enkel `style.css`.
-
-Men det er viktigere at teamet forstår modellen og funksjonaliteten enn at knappene har perfekte skygger.
-
----
-
-# Hva skal teamet fortsatt eie?
-
-Selv når KI skriver mye kode, skal teamet eie:
-
-**Kundebehovet**  
-Hva er problemet vi faktisk løser?
-
-**Skjermbildene**  
-Hvordan skal brukeren bruke systemet?
-
-**Modellen**  
-Hva må systemet vite og huske?
-
-**Arkitekturen**  
-Hvordan bygger vi applikasjoner i dette prosjektet?
-
-**Kvalitetssikringen**  
-Virker det? Er det riktig? Hva mangler?
-
-**Forståelsen**  
-Kan vi forklare løsningen?
-
-KI kan hjelpe med alle disse tingene.
-
-Men den kan ikke overta ansvaret for dem.
-
----
-
-# Faresignaler
-
-Vær ekstra oppmerksom hvis du tenker:
-
-> «Jeg vet ikke helt hva denne koden gjør, men den virker.»
+```js
+import
+export
+```
 
 eller:
 
-> «KI sier at vi bør endre hele arkitekturen.»
+```html
+<script type="module">
+```
+
+JavaScript-filene lastes med vanlige `<script src="...">`.
+
+## Ingen Node-verktøy
+
+Ikke bruk:
+
+- Node.js
+- npm
+- Vite
+- package.json
+- bundlere eller build-systemer
+
+Applikasjonen er vanlig HTML, CSS og JavaScript.
+
+## Ingen arrow functions
+
+Ikke bruk:
+
+```js
+const save = () => {
+};
+```
+
+Bruk:
+
+```js
+function save() {
+}
+```
+
+## Ingen funksjonelle array-metoder
+
+Ikke bruk:
+
+```js
+map()
+filter()
+find()
+reduce()
+forEach()
+some()
+every()
+```
+
+Bruk vanlige løkker og hjelpefunksjoner.
+
+`sort()` skal heller ikke introduseres som en generell løsning uten at det eksplisitt er en del av oppgaven; sortering kan løses med teknikkene studentene kjenner.
+
+## Ingen nyere objektsyntaks vi ikke har lært
+
+Ikke bruk:
+
+- destructuring
+- spread syntax
+- `Object.assign()`
+
+Ikke bruk for eksempel:
+
+```js
+const { name, email } = contact;
+```
 
 eller:
 
-> «Det er ikke så viktig at jeg forstår dette, for agenten kan bare lage det igjen.»
+```js
+const copy = { ...contact };
+```
 
-Da er det ofte på tide å stoppe og undersøke.
+Lag objekter eksplisitt.
 
-Bruk KI til å forklare.
+## Ingen classes
 
-Snakk med teamet.
+Ikke bruk:
 
-Forenkle løsningen.
+```js
+class Contact {
+}
+```
 
-Spør lærer hvis dere fortsatt er usikre.
+Vi bruker vanlige objekter og funksjoner.
 
----
+## Ingen asynkron programmering ennå
 
-# En anbefalt arbeidsmåte i caseoppgaven
+Ikke bruk:
 
-**1. Forstå kunden.**
+- `async`
+- `await`
+- `Promise`
+- `fetch`
 
-**2. Oppsummer bestillingen.**
+Emne 2-applikasjonen er en ren frontend uten backend/API.
 
-**3. Tegn skjermbilder.**
+Dette kommer senere i utdanningen.
 
-**4. Lag modellen sammen i teamet.**
+## Ingen avansert DOM-programmering
 
-**5. Snakk fag om modellen.**
+Ikke bruk som standard:
 
-Er dette viewState eller domenedata?
+- `querySelector`
+- `querySelectorAll`
+- `addEventListener`
+- `createElement`
+- manuell bygging av DOM-noder
 
-Lagrer vi noe som kan beregnes?
+Bruk `getElementById`, `innerHTML`, template strings og enkle inline-events.
 
-Har vi riktige ID-relasjoner?
+## Ingen rammeverk eller ekstra arkitektur
 
-Mangler vi data?
+Ikke introduser:
 
-**6. Bruk KI som ekstra reviewer.**
+- React
+- Vue
+- Angular
+- Svelte
+- TypeScript
+- state management-biblioteker
+- router-biblioteker
+- services
+- repositories
+- factories
+- dependency injection
 
-**7. Vurder tilbakemeldingen selv.**
-
-**8. Be lærer om hjelp der dere fortsatt er usikre.**
-
-**9. Commit modellen.**
-
-**10. Gi agenten bestilling + skjermbilder + modell + Emne 2-reglene.**
-
-**11. La agenten planlegge før større endringer.**
-
-**12. Implementer i små steg.**
-
-**13. Les og test det agenten lager.**
-
-**14. Lag QUnit-tester.**
-
-**15. Commit når dere har noe som fungerer og som teamet forstår.**
-
----
-
-# Hva betyr ferdig?
-
-Noe er ikke ferdig bare fordi KI har skrevet det.
-
-Spør:
-
-- Virker det?
-- Oppfyller det kundens behov?
-- Stemmer det med skjermbildene?
-- Bruker det modellen riktig?
-- Følger det Emne 2-reglene?
-- Har vi relevante tester?
-- Kan vi forklare koden til hverandre?
-
-Hvis svaret er ja, har KI hjulpet oss på en god måte.
+Ikke legg til arkitektur bare fordi KI mener den er «mer profesjonell».
 
 ---
 
-# Kortversjonen
+# Når KI brukes
 
-**Snakk fag – med mennesker og med KI.**
+KI kan gjerne:
 
-**Bruk KI mye, men ikke til å hoppe over læringen.**
+- evaluere modellen
+- foreslå view- og controller-funksjoner
+- implementere kode
+- forklare kode
+- finne feil
+- refaktorere innenfor denne verktøykassen
+- lage QUnit-tester
+- kvalitetssikre løsningen mot dette dokumentet
 
-**Gi KI god kontekst.**
+Men KI skal **ikke** få lov til å bytte ut den avtalte verktøykassen med teknikker den foretrekker selv.
 
-**Gi KI tydelige rammer.**
+Når KI evaluerer kode, bør den særlig se etter:
 
-**La ikke KI bestemme prosjektets kodestandard.**
+- Er `app`, `viewState` og domenedata skilt fornuftig?
+- Brukes ID-er mellom relaterte objekter?
+- Er data kopiert unødvendig?
+- Lagres noe som heller burde beregnes?
+- Endrer view domenedata?
+- Bygger controller HTML?
+- Er et viewState-objekt feilaktig blitt brukt direkte som domenobjekt?
+- Brukes konstruksjoner som står på listen over ting vi ikke bruker?
+- Kunne komplisert kode vært gjort forståelig med en vanlig løkke og en hjelpefunksjon?
 
-**Be om analyse før store endringer.**
+---
 
-**Les koden agenten lager.**
+# Hovedregelen
 
-**Test resultatet.**
+Emne 2-måten er ikke ment som den eneste eller mest avanserte måten å bygge JavaScript-applikasjoner på.
 
-**Bruk KI til å finne svakheter og spørsmål.**
+Den er en **bevisst begrenset pedagogisk arkitektur**.
 
-**Snakk med teamet om svarene.**
+Målet er at hele teamet skal kunne:
 
-Og viktigst:
+- lese koden
+- forklare modellen
+- forstå dataflyten
+- finne fram i view og controller
+- teste sentral logikk
+- bruke KI uten å miste kontroll over kodebasen
 
-> **KI kan skrive mye av koden. Dere må fortsatt eie forståelsen av løsningen.**
+**KI skal hjelpe oss å skrive kode innenfor verktøykassen – ikke utvide verktøykassen for oss.**
